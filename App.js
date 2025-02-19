@@ -2,22 +2,24 @@ import { NavigationContainer} from '@react-navigation/native';
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Calendar from './Calendar'
+import Cal from './Calendar'
 import Settings from "./Settings";
 import Focus from './Focus'
 import Labels from './Labels'
 import Login from './Login'
 import Home from './Home';
+import { TasksProvider } from'./Context'
+import FilteredTasks from './FilteredTasks';
 
 export default function App(){
 
     const MyTabs = createBottomTabNavigator()
     const Stack = createStackNavigator();
-
+    
     function NavigationRoot() {
         return(
             <MyTabs.Navigator screenOptions={{headerShown: false}} initialRouteName='Home'>
-                <MyTabs.Screen name="Calendar" component={Calendar} 
+                <MyTabs.Screen name="Calendar" component={Cal} 
                     options={{
                         tabBarIcon: ({color, size}) => (
                             <MaterialCommunityIcons name='calendar-month' color={color} size={size} />
@@ -48,7 +50,7 @@ export default function App(){
                 <MyTabs.Screen name="Settings" component={Settings} 
                     options={{
                         tabBarIcon: ({color, size}) => (
-                            <MaterialCommunityIcons name='tune' color={color} size={size} />
+                            <MaterialCommunityIcons name='cog' color={color} size={size} />
                         )
                     }}
                 />
@@ -59,11 +61,15 @@ export default function App(){
    
 
     return(
-        <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false}}>
-            {/* <Stack.Screen name='Login' component={Login}/> */}
-            <Stack.Screen name='Home' component={NavigationRoot}/>
-        </Stack.Navigator>
-        </NavigationContainer>
-    );
+        <TasksProvider>
+            <NavigationContainer>
+                <Stack.Navigator screenOptions={{ headerShown: false}}>
+                    {/* <Stack.Screen name='Login' component={Login}/> */}
+                    <Stack.Screen name='Home' component={NavigationRoot}/>
+                    <Stack.Screen name='FilteredTasks' component={FilteredTasks}/>
+                </Stack.Navigator>
+            </NavigationContainer>
+        </TasksProvider>
+        
+    ); 
 }
