@@ -7,14 +7,9 @@ import { TasksContext } from "./Context";
 import FilteredTasks from "./FilteredTasks";
 
 export default function Labels({navigation}) {
-    const [isModalVisible, setModalVisible] = useState(false);
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
     const {labelName, setLabelName} = useContext(TasksContext)
     const {labels, setLabels} = useContext(TasksContext)
-    const {value, setValue} = useContext(TasksContext)
-    const {tasks} = useContext(TasksContext)
+    const {value} = useContext(TasksContext)
 
     const addNewLabel = () => {
         const newLabel = {
@@ -79,38 +74,11 @@ export default function Labels({navigation}) {
                             />
                         </View>
 
-                        {/* Modal */}
-
-                        {/* <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}>
-                            <SafeAreaView style={styles.modal}>
-                                <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} on onPress={toggleModal} style={{marginLeft: 10, marginTop: 20}} color={'orange'}/>
-                                <Text style={{fontSize: 27, marginTop: 20, fontWeight: 'bold', marginLeft: 10}}> Tasks in {labels[index].name}: </Text>
-                                <Text>{filterTasks(labels[index].name)}</Text>
-                            </SafeAreaView>
-                        </Modal> */}
-
-
                     </TouchableOpacity>
                 )}
                 
             />
 
-             
-
-            {/* <TouchableOpacity style={styles.new_label} onPress={toggleModal}>
-                <Text style={{fontWeight: 'bold', fontSize: 17}}>+ Create New Label</Text>
-                <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>  
-                    <View style={styles.modal}>
-                        <TextInput 
-                            value={labelName}
-                            onChangeText={setLabelName}
-                            placeholder="Enter New Label Name"
-                            placeholderTextColor={'grey'}
-                        />
-                        <Button title="discard modal" onPress={toggleModal}/>
-                    </View>
-                </Modal>
-            </TouchableOpacity> */}
         </View>
     );
 }
@@ -129,13 +97,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 25,
         right: 25,
-    },
-    modal: {
-        width: Dimensions.get('window').width, 
-		height: Dimensions.get('window').height, 
-		backgroundColor: 'white', 
-		borderRadius: 20, 
-        alignSelf: 'center'
     },
     label_text: {
         fontSize: 20, 
