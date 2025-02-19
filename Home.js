@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TouchableOpacity, Button, TextInput, FlatList,} from "react-native";
 // import { Cell, Section, TableView } from 'react-native-tableview-simple';
 import Modal from "react-native-modal";
 import * as Location from 'expo-location'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SelectCountry } from 'react-native-element-dropdown';
+import Labels from "./Labels";
+import { TasksContext } from "./Context";
 
 export default function Home() {
     const [location, setLocation] = useState(null);
@@ -14,10 +17,12 @@ export default function Home() {
 	};
     const [taskName, setTaskName] = useState('')
     const [taskNotes, setTaskNotes] = useState('')
-    const [tasks, setTasks] = useState([])
+    const {tasks, setTasks} = useContext(TasksContext)
     const [empTasks, setEmpTasks] = useState(true)
+    const {labels} = useContext(TasksContext)
+    const {value, setValue} = useContext(TasksContext)
+    const {labelName, setLabelName} = useContext(TasksContext)
     
-
     // OpenWeather API for current weather
     useEffect(()=>{
         (async() => {
@@ -51,9 +56,10 @@ export default function Home() {
 
         const newTask = {
             name: taskName,
-            notes: taskNotes
+            notes: taskNotes,
+            label: labelName
         }
-        if (newTask.notes == "") {
+        if (newTask.notes === "") {
             newTask.notes = 'no notes provided'
             setTasks([...tasks, newTask.notes])
         }
@@ -61,14 +67,15 @@ export default function Home() {
         setTasks([...tasks, newTask])
         setTaskName("")
         setTaskNotes("")
-
+        
     }
     
     const onTaskComplete = (index) => {
-        const taskDelete = [...tasks]
-        taskDelete.splice(index, 1)
-        setTasks(taskDelete)
+        const taskComp = [...tasks]
+        taskComp.splice(index, 1)
+        setTasks(taskComp)
     }
+
 
     const isTodaysTaskEmpty = () => {
         if (tasks.length === 0) {
@@ -86,9 +93,9 @@ export default function Home() {
     const emptyTask = () => {
         if(empTasks === true) return (<Text style={styles.emptyTaskText}>Add Tasks to get started!</Text>)
     }
-
+    
     return (
-        <View style={[styles.container]}>
+        <View style={styles.container}>
             <SafeAreaView>
                 
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -115,28 +122,28 @@ export default function Home() {
                 </View>
 
                 {/* current tasks section */}
-                <View style={[styles.current_tasks]}>
+                <View style={styles.current_tasks}>
                     <Text style={{alignSelf: 'center', fontSize: 18, marginTop: 10, marginBottom: 10, fontWeight: '600', textDecorationLine: 'underline'}}>Tasks for today</Text>
                     <ScrollView>   
                         {emptyTask()}
-                        <TouchableOpacity>
                             <FlatList 
                                 data={tasks}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({item, index}) => (
-                                    <View style={styles.task_cell}>
+                                    <TouchableOpacity style={styles.task_cell}>
                                         <View>
                                             <Text style={{fontSize: 17, fontWeight: '500'}}>{item.name}</Text>
                                             <Text style={{color: 'grey'}}>{item.notes}</Text>
+                                            <Text>{item.label}</Text>
+                                            
                                         </View>
-                                        <MaterialCommunityIcons name='check-bold' size={25} color={'green'} 
-                                        style={{marginLeft: 20, marginRight: 5}} 
+                                        <MaterialCommunityIcons name='check-circle-outline' size={35} color={'green'} 
+                                        style={{marginLeft: 20, marginRight: 5, alignSelf :'center'}} 
                                         onPress={() => onTaskComplete(index)}
                                         />
-                                    </View>
+                                    </TouchableOpacity>
                                 )}
                             />
-                        </TouchableOpacity>
                     </ScrollView>
                 </View>
 
@@ -164,10 +171,23 @@ export default function Home() {
                                 placeholderTextColor={'grey'}
                                 style={styles.task_notes}
                             />
-                            {/* <Text style={{marginLeft: 25, marginTop: 25, fontSize:16}}>Reminder</Text>
-                            <Text style={{marginLeft: 25, marginTop: 25, fontSize:16}}>Due</Text>
-                            <Text style={{marginLeft: 25, marginTop: 25, fontSize:16}}>Labels</Text>
-                            <Text style={{marginLeft: 25, marginTop: 25, fontSize:16}}>Repeat</Text> */}
+
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                                <Text style={{marginLeft: 25, alignSelf: 'center', fontSize: 18}}>Labels:</Text>
+                                <SelectCountry
+                                    style={styles.dropdown}
+                                    selectedTextStyle={styles.selectedTextStyle}
+                                    maxHeight={200}
+                                    value={value}
+                                    data={labels}
+                                    valueField="value"
+                                    labelField="name"
+                                    onChange={e => {
+                                        setValue(e.value);
+                                        setLabelName(e.name);
+                                    }}
+                                />
+                            </View>
 
                             <View style={{flexDirection: 'row', alignSelf: 'center', marginTop: 20}}>
                                 <Button title="Discard Task" color={'black'} onPress={toggleModal}/>
@@ -204,21 +224,20 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     current_tasks: {
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderRadius: 20,
         marginTop: 15,
         marginBottom: 10,
-        height: 370
+        height: 430
     },
     completed_tasks:{
         borderWidth: 1,
         borderRadius: 20,
     },
     add_tasks: {
-        margin: 10, 
-        width: 130,
+        // margin: 5, 
         alignItems:'center',
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 20,
         alignSelf: 'flex-end'
     },
@@ -257,7 +276,7 @@ const styles = StyleSheet.create({
     },
     modal: {
         width: 350, 
-		height: 400, 
+		height: 450, 
 		backgroundColor: 'white', 
 		borderRadius: 20, 
         alignSelf: 'center'
@@ -268,6 +287,18 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 35,
         color: 'grey'
-    }
+    },
+    dropdown: {
+        margin: 16,
+        height: 50,
+        width: 150,
+        backgroundColor: '#EEEEEE',
+        borderRadius: 22,
+        paddingHorizontal: 8,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+        marginLeft: 8,
+    },
 
 });
