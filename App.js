@@ -10,6 +10,8 @@ import Login from './Login'
 import Home from './Home';
 import { TasksProvider } from'./Context'
 import FilteredTasks from './FilteredTasks';
+import Pomodoro from './Pomodoro';
+import TimeTrack from './TimeTrack';
 
 export default function App(){
 
@@ -67,6 +69,8 @@ export default function App(){
                     {/* <Stack.Screen name='Login' component={Login}/> */}
                     <Stack.Screen name='Home' component={NavigationRoot}/>
                     <Stack.Screen name='FilteredTasks' component={FilteredTasks}/>
+                    <Stack.Screen name='Pomodoro' component={Pomodoro}/>
+                    <Stack.Screen name='TimeTrack' component={TimeTrack}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </TasksProvider>
