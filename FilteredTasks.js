@@ -4,8 +4,6 @@ import { TasksContext } from "./Context";
 import { useContext } from "react";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
-
 export default function FilteredTasks({route, navigation}) {
     const {labels} = useContext(TasksContext)
     const {tasks, setTasks} = useContext(TasksContext)
