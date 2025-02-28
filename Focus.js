@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, TextInput, Button} from "react-native";
 import { TasksContext } from "./Context";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Modal from "react-native-modal";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Pomodoro from "./Pomodoro";
@@ -10,13 +10,16 @@ import TimeTrack from "./TimeTrack";
 export default function Focus({navigation}) {
     const {tasks, setTasks} = useContext(TasksContext)
     const {focusTasks, setFocusTasks} = useContext(TasksContext)
+    const {name, setName} = useContext(TasksContext)
     const [isModalVisible, setModalVisible] = useState(false);
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     };
+    // const [taskName, setTaskName] = useState('')
+    // const [taskNotes, setTaskNotes] = useState('')
     const [focusTaskName, setFocusTaskName] = useState('')
     const [focusTaskNotes, setFocusTaskNotes] = useState('')
-    const {name, setName} = useContext(TasksContext)
+    const [empty, setEmpty] = useState(false)
 
     const onTaskSubmit = () => {
         console.log("task submitted");
@@ -24,7 +27,6 @@ export default function Focus({navigation}) {
         const newTask = {
             name: focusTaskName,
             notes: focusTaskNotes,
-            // label: labelName
         }
         if (newTask.notes === "") {
             newTask.notes = 'no notes provided'
@@ -41,18 +43,28 @@ export default function Focus({navigation}) {
         const taskComp = [...focusTasks]
         taskComp.splice(index, 1)
         setFocusTasks(taskComp)
+        setName('')
     }
 
+    const isFocusTaskEmpty = () => {
+        if(focusTasks.length === 0) setEmpty(true)
+        else setEmpty(false)
+    } 
+    useEffect(()=> {
+        isFocusTaskEmpty()
+    }, [focusTasks])
 
     return (
         <View style={styles.container}>
             <View style={styles.focus_view}>
                 <Text style={{fontSize: 35,  fontWeight: 'bold', alignSelf: 'center'}}>Focus Mode</Text>
-                <Text style={{fontSize: 20, fontWeight: '400', alignSelf: 'center', flexWrap: 'wrap'}}>What would you like to focus on today?</Text>
+                <Text style={{fontSize: 20, fontWeight: '400', alignSelf: 'center',}}>What will you focus on today?</Text>
             </View>
 
             <View style={styles.focus_tasks}> 
                 <Text style={{alignSelf: 'center', fontSize: '17', marginTop: 10}}>Create a task for your focus session!</Text>
+                {empty && <Text style={styles.empty_task}>Add your tasks for them to appear here!</Text>}
+
                 <ScrollView>
                     <FlatList
                         data={focusTasks}
@@ -60,9 +72,8 @@ export default function Focus({navigation}) {
                         renderItem={({item, index}) => (
                             <TouchableOpacity style={styles.task_cell} 
                                 onPress={()=> {
-                                    console.log(item.name)
                                     setName(item.name)
-                                    console.log(name);
+                                    console.log(name)                                    
                                 }}>
                                 <View>
                                     <Text style={{fontSize: 17, fontWeight: '500'}}>{item.name}</Text>
@@ -80,51 +91,59 @@ export default function Focus({navigation}) {
                     />
                 </ScrollView>
 
+                <TouchableOpacity onPress={toggleModal} style={styles.add_tasks_button}>
+                    <Text style={{margin: 10, fontSize: 18.5, fontStyle: 'italic', fontWeight: 'bold'}}>Add Task</Text>
+                    
+                    <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
+                        <View style={styles.modal}>
+                            <Text style={styles.add_task_text}>Add Task</Text>
+                            <TextInput value={focusTaskName} onChangeText={setFocusTaskName} 
+                                placeholder="What would you like to accomplish?"
+                                placeholderTextColor={'grey'}
+                                style={styles.task_text}
+                            />
+                            <TextInput value={focusTaskNotes} onChangeText={setFocusTaskNotes}
+                                multiline
+                                maxLength={1000}
+                                placeholder="Task Description/Notes"
+                                placeholderTextColor={'grey'}
+                                style={styles.task_notes}
+                            />
+
+                            <View style={{flexDirection: 'row', alignSelf: 'center', marginTop: 20}}>
+                                <Button title="Discard Task" color={'black'} onPress={toggleModal}/>
+                                <Button title="Save Task" color={'black'} 
+                                    onPress={()=> {
+                                        onTaskSubmit()
+                                        toggleModal()
+                                    }}/>
+                            </View>
+                            
+                        </View>
+                    </Modal>
+                
+                </TouchableOpacity>
 
             </View>
 
-            <TouchableOpacity onPress={toggleModal} style={styles.add_tasks_button}>
-                <Text style={{margin: 10, fontSize: 18.5, fontStyle: 'italic', fontWeight: 'bold'}}>Add Task</Text>
-                
-                <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
-                    <View style={styles.modal}>
-                        <Text style={styles.add_task_text}>Add Task</Text>
-                        <TextInput value={focusTaskName} onChangeText={setFocusTaskName} 
-                            placeholder="What would you like to accomplish?"
-                            placeholderTextColor={'grey'}
-                            style={styles.task_text}
-                        />
-                        <TextInput value={focusTaskNotes} onChangeText={setFocusTaskNotes}
-                            multiline
-                            maxLength={1000}
-                            placeholder="Task Description/Notes"
-                            placeholderTextColor={'grey'}
-                            style={styles.task_notes}
-                        />
-
-                        <View style={{flexDirection: 'row', alignSelf: 'center', marginTop: 20}}>
-                            <Button title="Discard Task" color={'black'} onPress={toggleModal}/>
-                            <Button title="Save Task" color={'black'} 
-                                onPress={()=> {
-                                    onTaskSubmit()
-                                    toggleModal()
-                                }}/>
-                        </View>
-                        
-                    </View>
-                </Modal>
-            
-            </TouchableOpacity>
         
-            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+            <View style={{flexDirection: 'row', alignSelf: 'center' , marginTop: 15}}>
                 {/* Pomodoro feature  */}
-                <TouchableOpacity style={styles.pom_button} onPress={()=>navigation.navigate(Pomodoro)}>
-                    <Text>Start Pomodoro Timer</Text>
+                <TouchableOpacity style={styles.pom_button} 
+                    onPress={()=>{
+                        if(name !== "") navigation.navigate(Pomodoro)
+                        else alert('Task has not been selected/created.')
+                    }}>
+                    <Text style={{fontSize: 18, fontWeight: '600'}}>Pomodoro Mode</Text>
                 </TouchableOpacity>
 
                 {/* Time tracking feature */}
-                <TouchableOpacity style={styles.tt_button} onPress={()=>navigation.navigate(TimeTrack)}>
-                    <Text>Start Time Tracking</Text>
+                <TouchableOpacity style={styles.tt_button} 
+                    onPress={()=>{
+                        if(name !== "") navigation.navigate(TimeTrack)
+                        else alert('Task has not been selected/created.')
+                    }}>
+                    <Text style={{fontSize: 18, fontWeight: '600'}}>Time Tracking Mode</Text>
                 </TouchableOpacity>
             </View>
 
@@ -139,17 +158,14 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     focus_view: {
-        borderWidth: 1, 
         marginTop: 35, 
-        padding: 10, 
-        paddingBottom: 20, 
-        borderRadius: 50
+        margin: 5,
     },
     focus_tasks: {
         borderWidth: 1,
         marginTop: 20,
-        height: 400,
-        borderRadius: 20
+        height: 450,
+        borderRadius: 20,
     },
     add_tasks_button: {
         borderWidth: 1,
@@ -157,6 +173,7 @@ const styles = StyleSheet.create({
         padding: 5,
         borderRadius: 20,
         margin: 10,
+        
     },
     modal: {
         width: 350, 
@@ -201,13 +218,22 @@ const styles = StyleSheet.create({
     },
     pom_button: {
         borderWidth: 1,
-        padding: 5,
-        margin: 5
+        padding: 10,
+        margin: 5,
+        borderRadius: 15
     },
     tt_button: {
         borderWidth: 1,
-        padding: 5,
-        margin: 5
+        padding: 10,
+        margin: 5,
+        borderRadius: 15
+    },
+    empty_task : {
+        fontSize: 22,
+        fontStyle: 'italic',
+        textAlign: 'center',
+        marginTop: 35,
+        color: 'grey'
     }
 
 

@@ -108,7 +108,7 @@ export default function Home() {
                         <Text style={{alignSelf: 'center', fontSize: 18, marginTop: 10, marginBottom: 10, fontWeight: '600', textDecorationLine: 'underline'}}>Current weather</Text>
                     </View>
 
-                    <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                    {/* <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
                         <View>
                             <Text style={{marginLeft: 15, fontSize: 17, marginBottom: 5}}> {location.name} </Text>
                             <Text style={{marginLeft: 15, fontSize: 17, fontWeight: 'bold', alignSelf: 'center', marginBottom: 5}}>{Math.round(location.main.temp)}°C</Text>
@@ -118,7 +118,7 @@ export default function Home() {
                         <Image style={{width: 60, height: 60,}} 
                             source={{uri: 'https://openweathermap.org/img/wn/' + location.weather[0].icon + '@2x.png'}} 
                         />    
-                    </View>
+                    </View> */}
                 </View>
 
                 {/* current tasks section */}
