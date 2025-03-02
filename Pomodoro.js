@@ -24,9 +24,50 @@ export default function Pomodoro({navigation}) {
     };   
     const [sound, setSound] = useState()
 
-    async function playSound() {
+    async function playSound1() {
+        // This sound from https://pixabay.com/sound-effects/gentle-ocean-waves-birdsong-and-gull-7109/
         console.log('sound loading');
-        const {sound} = await Audio.Sound.createAsync(require('./assets/aon_inspired.mp3'))        
+        const {sound} = await Audio.Sound.createAsync(require('./assets/gentle-ocean-waves-birdsong-and-gull-7109.mp3'))        
+        sound.setIsLoopingAsync(true)
+        setSound(sound)
+        await sound.playAsync();
+    }
+
+    async function playSound2() {
+        // This sound is from https://pixabay.com/sound-effects/relaxing-smoothed-brown-noise-294838/
+        console.log('sound loading');
+        const {sound} = await Audio.Sound.createAsync(require('./assets/relaxing-smoothed-brown-noise-294838.mp3'))   
+        sound.setIsLoopingAsync(true)
+        setSound(sound)
+
+        await sound.playAsync();
+    }
+    
+    async function playSound3() {
+        // This sound is from https://pixabay.com/sound-effects/rainy-day-in-town-with-birds-singing-194011/
+        console.log('sound loading');
+        const {sound} = await Audio.Sound.createAsync(require('./assets/rainy-day-in-town-with-birds-singing-194011.mp3'))  
+        sound.setIsLoopingAsync(true)
+        setSound(sound)
+
+        await sound.playAsync();
+    }
+
+    async function playSound4() {
+        // This sound is from https://pixabay.com/sound-effects/crackling-fire-sound-307026/
+        console.log('sound loading');
+        const {sound} = await Audio.Sound.createAsync(require('./assets/crackling-fire-sound-307026.mp3'))    
+        sound.setIsLoopingAsync(true)
+        setSound(sound)
+
+        await sound.playAsync();
+    }
+
+    async function playSound5() {
+        // This sound is from https://pixabay.com/sound-effects/rain-sounds-relaxing-noise-and-sound-of-summer-rain-143334/
+        console.log('sound loading');
+        const {sound} = await Audio.Sound.createAsync(require('./assets/rain-sounds-relaxing-noise-and-sound-of-summer-rain-143334.mp3'))      
+        sound.setIsLoopingAsync(true)  
         setSound(sound)
 
         await sound.playAsync();
@@ -226,7 +267,6 @@ export default function Pomodoro({navigation}) {
                     </TouchableOpacity>
                 </TouchableOpacity>
 
-            
                 <TimerPickerModal 
                     visible={showPicker}
                     setIsVisible={setShowPicker}
@@ -253,17 +293,6 @@ export default function Pomodoro({navigation}) {
                     }}/>
                 </View>
             </View>
-        );
-    }
-
-    const backgroundSounds =() => {
-        console.log('icon pressed');
-        return (
-                <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
-                    <View style={styles.modal}> 
-                        <Text>banana</Text>
-                    </View>
-                </Modal>
         );
     }
 
@@ -316,22 +345,57 @@ export default function Pomodoro({navigation}) {
 
             </View>
 
-            <TouchableOpacity onPress={toggleModal}>
-                <Text style={styles.bs_title}>Background Sounds</Text>
-                <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
-                    <View style={styles.modal}> 
-                        <Text>Background Sounds for your focus sessions</Text>
-                        <View style={styles.sound_1}>
-                            <Text style={{alignSelf: 'center', fontSize: 17}}>Sound 1</Text>
-                            <MaterialCommunityIcons name="volume-high" size={25} onPress={stopSound} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
-                        </View>
-                        <Button onPress={toggleModal} title="Close"/>
-                    </View>
-                </Modal>
-            </TouchableOpacity>
+            <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
+                <TouchableOpacity onPress={toggleModal}>
+                    <Text style={styles.bs_title}>Background Sounds</Text>
 
-            <MaterialCommunityIcons name="stop" size={40} onPress={stopSound} style={{alignSelf: 'flex-end', marginRight: 35, borderWidth: 1, borderRadius: 30, padding: 5}}/>
-            
+                    {/* Modal containing 5 background sounds (looped) */}
+                    <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
+                        <View style={styles.modal}> 
+                            <Text style={{fontSize: 17, flexWrap: 'wrap', alignSelf: 'center', marginTop: 15, margin: 10, textAlign: 'center'}}>Background Sounds for your focus sessions</Text>
+
+                            <View style={styles.sound}>
+                                <Text style={{alignSelf: 'center', fontSize: 17}}>Ocean waves</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound1} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                            </View>
+
+                            <View style={styles.sound}>
+                                <Text style={{alignSelf: 'center', fontSize: 17}}>Brown noise</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound2} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                            </View>
+
+                            <View style={styles.sound}>
+                                <Text style={{alignSelf: 'center', fontSize: 17}}>Nature Sounds</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound3} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                            </View>
+
+                            <View style={styles.sound}>
+                                <Text style={{alignSelf: 'center', fontSize: 17}}>Fire crackling sound</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound4} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                            </View>
+
+                            <View style={styles.sound}>
+                                <Text style={{alignSelf: 'center', fontSize: 17}}>Rain Sounds</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound5} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                            </View>
+
+                            <View style={{flexDirection:'row', justifyContent: 'space-evenly'}}>
+                                <TouchableOpacity style={styles.stop_sound} onPress={stopSound}>
+                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: 'bold'}}>Stop Sound</Text>
+                                </TouchableOpacity>
+                                
+                                <TouchableOpacity onPress={toggleModal} style={{alignSelf: 'center'}}> 
+                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: '500', color: 'blue'}}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                    </Modal>
+                </TouchableOpacity>
+
+                <MaterialCommunityIcons name="stop-circle-outline" size={60} onPress={stopSound} style={{alignSelf: 'center'}}/>
+            </View>
+
         </SafeAreaView>
     );
 }
@@ -372,7 +436,7 @@ const styles = StyleSheet.create({
     },
     modal: {
         width: 350, 
-		height: 450, 
+		height: 550, 
 		backgroundColor: 'white', 
 		borderRadius: 20, 
         alignSelf: 'center'
@@ -386,12 +450,23 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold'
     },
-    sound_1: {
+    sound: {
         borderWidth: 1,
-        margin: 15,
-        padding: 15,
+        margin: 10,
+        marginLeft: 20,
+        marginRight: 20,
+        padding: 10,
         borderRadius: 20,
         flexDirection: 'row',
         justifyContent: 'space-between'
+    },
+    stop_sound: {
+        margin: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        borderWidth: 2,
+        alignSelf: 'center',
+        padding: 10,
+        borderRadius: 20
     }
 });

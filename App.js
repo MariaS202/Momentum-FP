@@ -66,7 +66,7 @@ export default function App(){
         <TasksProvider>
             <NavigationContainer>
                 <Stack.Navigator screenOptions={{ headerShown: false}}>
-                    {/* <Stack.Screen name='Login' component={Login}/> */}
+                    <Stack.Screen name='Login' component={Login}/>
                     <Stack.Screen name='Home' component={NavigationRoot}/>
                     <Stack.Screen name='FilteredTasks' component={FilteredTasks}/>
                     <Stack.Screen name='Pomodoro' component={Pomodoro}/>
