@@ -1,31 +1,74 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Button, TextInput, FlatList, Alert, Dimensions, SafeAreaView, } from "react-native";
 import Modal from "react-native-modal";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Home from "./Home";
 import { TasksContext } from "./Context";
 import FilteredTasks from "./FilteredTasks";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Labels({navigation}) {
     const {labelName, setLabelName} = useContext(TasksContext)
     const {labels, setLabels} = useContext(TasksContext)
     const {value} = useContext(TasksContext)
+    const {email} = useContext(TasksContext)
 
-    const addNewLabel = () => {
+    const storeLabels = async(val) => {
+        try {
+            const jsonValue = JSON.stringify(val)
+            await AsyncStorage.setItem(`${email}_labels_key`, jsonValue)
+        } catch (e) {
+            console.log(e);
+            
+        }
+    }
+
+    const addNewLabel = async() => {
         const newLabel = {
             value: value,
-            name: labelName
+            lname: labelName
         }
-        if(newLabel.name === "") {
+
+        if(newLabel.lname === '') {
             alert('Empty Label!')
+            return
         }
 
         setLabels([...labels, newLabel])
+        storeLabels([...labels, newLabel])
         setLabelName('')        
     }
 
-    const deleteLabel = (index) => {
-        Alert.alert('Delete Label?', `Are you sure that you want to delete ${labels[index].name} label?`, [
+    const getLabels = async() => {
+        try {
+            const jsonValue = await AsyncStorage.getItem(`${email}_labels_key`);
+            console.log('retrieving LABELS', labels);
+            return jsonValue != null ? setLabels(JSON.parse(jsonValue)) : setLabels([])
+
+        } catch (e) {
+            console.log('error', e);
+        }
+    }
+
+    useEffect(()=> {
+        getLabels()
+    }, [])
+
+    const removeLabel = async(del) => {
+        try {
+            await AsyncStorage.setItem(`${email}_labels_key`, JSON.stringify(del))
+            console.log('removed labels');
+            
+        } catch (e) {
+            console.log('Error:', e);
+               
+        }
+    }
+
+
+    const deleteLabel = async(index) => {
+
+        Alert.alert('Delete Label?', `Are you sure that you want to delete ${labels[index].lname} label?`, [
             {
                 text: 'No',
                 style: 'cancel'
@@ -35,7 +78,9 @@ export default function Labels({navigation}) {
                 onPress: () => {
                     const labelDel = [...labels]
                     labelDel.splice(index, 1)
+                    removeLabel(labelDel)
                     setLabels(labelDel)
+                    
                 },
                 style: 'destructive'
             }
@@ -67,7 +112,7 @@ export default function Labels({navigation}) {
                         onPress={()=>navigation.navigate('FilteredTasks', {label: item})}>
 
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', }}>
-                            <Text style={styles.label_text}>{item.name}</Text>
+                            <Text style={styles.label_text}>{item.lname}</Text>
                             <MaterialCommunityIcons name='delete-circle-outline' size={35} color={'red'} 
                                 style={{marginLeft: 20, marginRight: 5}} 
                                 onPress={() => deleteLabel(index)}

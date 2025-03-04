@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { View, Text, StyleSheet, SafeAreaView, TextInput, KeyboardAvoidingView, Button} from "react-native";
 import Home from './Home'
 import { auth } from "./firebaseConfig";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, } from "firebase/auth";
+import { TasksContext } from "./Context";
 
 export default function Login({navigation}) {
-    const [email, setEmail] = useState('')
-    const [pass, setPass] = useState('')
+    const {email, setEmail} = useContext(TasksContext)
+    const {pass, setPass} = useContext(TasksContext)
 
     const signUp = () => {
         createUserWithEmailAndPassword(auth, email, pass)
@@ -63,6 +64,7 @@ export default function Login({navigation}) {
                     <Button title="Sign-In"  
                         onPress={()=> {
                             signIn()
+                            console.log(email, pass);                         
                             navigation.navigate(Home)
                         }}/>
 

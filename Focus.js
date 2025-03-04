@@ -5,12 +5,14 @@ import Modal from "react-native-modal";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Pomodoro from "./Pomodoro";
 import TimeTrack from "./TimeTrack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export default function Focus({navigation}) {
     const {tasks, setTasks} = useContext(TasksContext)
     const {focusTasks, setFocusTasks} = useContext(TasksContext)
     const {name, setName} = useContext(TasksContext)
+    const {email} = useContext(TasksContext)
     const [isModalVisible, setModalVisible] = useState(false);
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -20,6 +22,17 @@ export default function Focus({navigation}) {
     const [focusTaskName, setFocusTaskName] = useState('')
     const [focusTaskNotes, setFocusTaskNotes] = useState('')
     const [empty, setEmpty] = useState(false)
+
+    const storeFocusTasks = async(val) => {
+        try {
+            const jsonValue = JSON.stringify(val)
+            await AsyncStorage.setItem(`${email}_focus_key`, jsonValue)
+        } catch (e) {
+            console.log(e);
+            
+        }
+    }
+
 
     const onTaskSubmit = () => {
         console.log("task submitted");
@@ -34,15 +47,39 @@ export default function Focus({navigation}) {
         }
         
         setFocusTasks([...focusTasks, newTask])
+        storeFocusTasks([...focusTasks, newTask])
         setFocusTaskName("")
         setFocusTaskNotes("")
         
     }
 
-    const onTaskComplete = (index) => {
+    const getTasks = async() => {
+        try {
+            const jsonValue = await AsyncStorage.getItem(`${email}_focus_key`);
+            console.log('retrieving focus', focusTasks);
+            return jsonValue != null ? setFocusTasks(JSON.parse(jsonValue)) : setFocusTasks([])
+
+        } catch (e) {
+            console.log('error', e);
+        }
+    }
+
+    useEffect(()=> {
+        getTasks()
+    }, [])
+    
+    const onTaskComplete = async(index) => {
         const taskComp = [...focusTasks]
         taskComp.splice(index, 1)
         setFocusTasks(taskComp)
+        try {
+            await AsyncStorage.setItem(`${email}_focus_key`, JSON.stringify(taskComp))
+            console.log('removed focus task');
+            
+        } catch (e) {
+            console.log('Error:', e);
+               
+        }
         setName('')
     }
 
@@ -50,6 +87,7 @@ export default function Focus({navigation}) {
         if(focusTasks.length === 0) setEmpty(true)
         else setEmpty(false)
     } 
+
     useEffect(()=> {
         isFocusTaskEmpty()
     }, [focusTasks])
@@ -62,7 +100,7 @@ export default function Focus({navigation}) {
             </View>
 
             <View style={styles.focus_tasks}> 
-                <Text style={{alignSelf: 'center', fontSize: '17', marginTop: 10}}>Create a task for your focus session!</Text>
+                <Text style={{alignSelf: 'center', fontSize: '17', marginTop: 10, textAlign: 'center'}}>Create and select a task for your focus session!</Text>
                 {empty && <Text style={styles.empty_task}>Add your tasks for them to appear here!</Text>}
 
                 <ScrollView>

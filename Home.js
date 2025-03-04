@@ -7,6 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { SelectCountry } from 'react-native-element-dropdown';
 import Labels from "./Labels";
 import { TasksContext } from "./Context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
     const [location, setLocation] = useState(null);
@@ -22,7 +23,9 @@ export default function Home() {
     const {labels} = useContext(TasksContext)
     const {value, setValue} = useContext(TasksContext)
     const {labelName, setLabelName} = useContext(TasksContext)
-    
+    const {email, setEmail} = useContext(TasksContext)
+
+
     // OpenWeather API for current weather
     useEffect(()=>{
         (async() => {
@@ -51,7 +54,17 @@ export default function Home() {
         })();
     }, [])
 
-    const onTaskSubmit = () => {
+    const storeTasks = async(val) => {
+        try {
+            const jsonValue = JSON.stringify(val)
+            await AsyncStorage.setItem(`${email}_tasks_key`, jsonValue)
+        } catch (e) {
+            console.log(e);
+            
+        }
+    }
+
+    const onTaskSubmit = async() => {
         console.log("task submitted");
 
         const newTask = {
@@ -63,19 +76,49 @@ export default function Home() {
             newTask.notes = 'no notes provided'
             setTasks([...tasks, newTask.notes])
         }
-        
+        else if(newTask.name === '' && newTask.notes === 'no notes provided' && newTask.label === ''){
+            alert('task fields are empty')
+            setTasks([])
+            return
+        }
+
         setTasks([...tasks, newTask])
+        storeTasks([...tasks, newTask])
         setTaskName("")
         setTaskNotes("")
-        
+        setLabelName("")
     }
+ 
+    const getTasks = async() => {
+        try {
+            const jsonValue = await AsyncStorage.getItem(`${email}_tasks_key`);
+            console.log('retrieving', tasks);
+            return jsonValue != null ? setTasks(JSON.parse(jsonValue)) : setTasks([])
+
+        } catch (e) {
+            console.log('error', e);
+        }
+    }
+
+    useEffect(()=> {
+        getTasks()
+    }, [])
     
-    const onTaskComplete = (index) => {
+
+    const onTaskComplete = async(index) => {
         const taskComp = [...tasks]
         taskComp.splice(index, 1)
         setTasks(taskComp)
-    }
 
+        try {
+            await AsyncStorage.setItem(`${email}_tasks_key`, JSON.stringify(taskComp))
+            console.log('removed');
+            
+        } catch (e) {
+            console.log('Error:', e);
+               
+        }
+    }
 
     const isTodaysTaskEmpty = () => {
         if (tasks.length === 0) {
@@ -85,19 +128,19 @@ export default function Home() {
             setEmpTasks(false)
         }
     }
+
     // to check if the task list is empty with tasks as its dependency
     useEffect(() => {
         isTodaysTaskEmpty();
     }, [tasks])
     
     const emptyTask = () => {
-        if(empTasks === true) return (<Text style={styles.emptyTaskText}>Add Tasks to get started!</Text>)
+        if(empTasks === true) return <Text style={styles.emptyTaskText}>Add Tasks to get started!</Text>
     }
     
     return (
         <View style={styles.container}>
             <SafeAreaView>
-                
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <Text style={styles.welcome_text}>Welcome Maria!</Text>
                     <MaterialCommunityIcons name='bell' color='black' size={30} style={{marginTop: 13}}/>
@@ -125,17 +168,17 @@ export default function Home() {
                 <View style={styles.current_tasks}>
                     <Text style={{alignSelf: 'center', fontSize: 18, marginTop: 10, marginBottom: 10, fontWeight: '600', textDecorationLine: 'underline'}}>Tasks for today</Text>
                     <ScrollView>   
-                        {emptyTask()}
-                            <FlatList 
+                        {emptyTask()}                
+                            <FlatList
                                 data={tasks}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({item, index}) => (
                                     <TouchableOpacity style={styles.task_cell}>
+
                                         <View>
                                             <Text style={{fontSize: 17, fontWeight: '500'}}>{item.name}</Text>
                                             <Text style={{color: 'grey'}}>{item.notes}</Text>
                                             <Text>{item.label}</Text>
-                                            
                                         </View>
                                         <MaterialCommunityIcons name='check-circle-outline' size={35} color={'green'} 
                                         style={{marginLeft: 20, marginRight: 5, alignSelf :'center'}} 
@@ -181,10 +224,10 @@ export default function Home() {
                                     value={value}
                                     data={labels}
                                     valueField="value"
-                                    labelField="name"
+                                    labelField="lname"
                                     onChange={e => {
                                         setValue(e.value);
-                                        setLabelName(e.name);
+                                        setLabelName(e.lname);
                                     }}
                                 />
                             </View>

@@ -12,26 +12,9 @@ const firebaseConfig = {
 };
 
 // Initialising firebase and firebase authentication
-// const app = initializeApp(firebaseConfig);
-// const auth = initializeAuth(app, {
-//     persistence: getReactNativePersistence(AsyncStorage)
-// })
-
-// https://github.com/firebase/firebase-js-sdk/discussions/4510#discussioncomment-5080526
-let app, auth;
-
-if (!getApps().length) {
-    try {
-        app = initializeApp(firebaseConfig);
-        auth = initializeAuth(app, {
-        persistence: getReactNativePersistence(AsyncStorage),
-        });
-    } catch (error) {
-        console.log("Error initializing app: " + error);
-    }
-} else {
-    app = getApp();
-    auth = getAuth(app);
-}
+const app = initializeApp(firebaseConfig);
+const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+})
 
 export {auth}
