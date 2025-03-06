@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button} from "react-native";
 import { Agenda } from "react-native-calendars";
 import Modal from "react-native-modal";

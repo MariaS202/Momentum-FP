@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Image, TouchableOpacity, Button, TextInput, FlatList,} from "react-native";
-// import { Cell, Section, TableView } from 'react-native-tableview-simple';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from "react-native-modal";
 import * as Location from 'expo-location'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,6 +8,7 @@ import { SelectCountry } from 'react-native-element-dropdown';
 import Labels from "./Labels";
 import { TasksContext } from "./Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from 'expo-notifications';
 
 export default function Home() {
     const [location, setLocation] = useState(null);
@@ -18,13 +19,52 @@ export default function Home() {
 	};
     const [taskName, setTaskName] = useState('')
     const [taskNotes, setTaskNotes] = useState('')
-    const {tasks, setTasks} = useContext(TasksContext)
     const [empTasks, setEmpTasks] = useState(true)
+    const [time, setTime] = useState(new Date())
+    const [taskDate, setTaskDate] = useState(new Date())
+    const {tasks, setTasks} = useContext(TasksContext)
     const {labels} = useContext(TasksContext)
     const {value, setValue} = useContext(TasksContext)
     const {labelName, setLabelName} = useContext(TasksContext)
     const {email, setEmail} = useContext(TasksContext)
 
+    // First, set the handler that will cause the notification
+    // // to show the alert
+    Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        }),
+    });
+    
+    // Second, call scheduleNotificationAsync()
+    // Notifications.scheduleNotificationAsync({
+    //     content: {
+    //       title: "Time's up!",
+    //       body: 'Change sides!',
+    //     },
+    //     trigger: {
+    //     //   type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+    //     //   seconds: 60,
+    //     },
+    //   });
+
+    const changeDate = (event, date) => {
+        const {
+            set,
+            nativeEvent: {timestamp, utcOffset},
+          } = event;
+          setTaskDate(date)
+    }
+
+    const changeTime = (event, time) => {
+        const {
+            set,
+            nativeEvent: {timestamp, utcOffset},
+          } = event;
+        setTime(time)
+    }
 
     // OpenWeather API for current weather
     useEffect(()=>{
@@ -201,12 +241,15 @@ export default function Home() {
                     
                     <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
                         <View style={styles.modal}>
+                            {/* Add tasks heading */}
                             <Text style={styles.add_task_text}>Add Task</Text>
+                            {/* task name */}
                             <TextInput value={taskName} onChangeText={setTaskName} 
                                 placeholder="What would you like to accomplish?"
                                 placeholderTextColor={'grey'}
                                 style={styles.task_text}
                             />
+                            {/* additional notes for the task */}
                             <TextInput value={taskNotes} onChangeText={setTaskNotes}
                                 multiline
                                 maxLength={1000}
@@ -214,7 +257,7 @@ export default function Home() {
                                 placeholderTextColor={'grey'}
                                 style={styles.task_notes}
                             />
-
+                            {/* Assigning an existing Label to a task */}
                             <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                                 <Text style={{marginLeft: 25, alignSelf: 'center', fontSize: 18}}>Labels:</Text>
                                 <SelectCountry
@@ -232,6 +275,33 @@ export default function Home() {
                                 />
                             </View>
 
+                            {/* Scheduling tasks */}
+                            <View>
+                                <Text style={{alignSelf: 'center', fontSize: 18}}>Schedule task on:</Text> 
+
+                                <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10}}>
+                                    <DateTimePicker 
+                                        mode="date"
+                                        value={taskDate}
+                                        onChange={changeDate}
+                                        textColor="black"
+                                    />
+                                    <DateTimePicker 
+                                        mode="time"
+                                        value={time}
+                                        onChange={changeTime}
+                                    />
+                                    {console.log(taskDate)}
+                                </View>
+                            </View>
+
+                            {/* Set Reminder */}
+                            <View>
+                                <Text style={{marginLeft: 25, fontSize: 18}}>Set Reminder: </Text>
+                            </View>
+
+
+                            {/* Discard and saving tasks buttons */}
                             <View style={{flexDirection: 'row', alignSelf: 'center', marginTop: 20}}>
                                 <Button title="Discard Task" color={'black'} onPress={toggleModal}/>
                                 <Button title="Save Task" color={'black'} 
@@ -318,8 +388,8 @@ const styles = StyleSheet.create({
         borderRadius: 20
     },
     modal: {
-        width: 350, 
-		height: 450, 
+        width: 370, 
+		height: 600, 
 		backgroundColor: 'white', 
 		borderRadius: 20, 
         alignSelf: 'center'

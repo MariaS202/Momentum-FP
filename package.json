@@ -29,7 +29,8 @@
     "react-native-tableview-simple": "^4.4.1",
     "react-native-timer-picker": "^2.1.0",
     "react-native-vector-icons": "^10.2.0",
-    "react-timer-hook": "^3.0.8"
+    "react-timer-hook": "^3.0.8",
+    "expo-notifications": "~0.29.13"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
