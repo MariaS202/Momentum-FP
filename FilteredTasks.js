@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity} from "react-native";
 import Labels from "./Labels";
 import { TasksContext } from "./Context";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -9,7 +9,6 @@ export default function FilteredTasks({route, navigation}) {
     const {labels} = useContext(TasksContext)
     const {tasks, setTasks} = useContext(TasksContext)
     const {email} = useContext(TasksContext)
-
     const {label} = route.params
 
     const storeFTasks = async(val) => {
@@ -30,7 +29,7 @@ export default function FilteredTasks({route, navigation}) {
 
         try {
             await AsyncStorage.setItem(`${email}_ftasks_key`, JSON.stringify(taskComp))
-            console.log('removed');
+            console.log('removed filter');
             
         } catch (e) {
             console.log('Error:', e);
@@ -93,7 +92,6 @@ export default function FilteredTasks({route, navigation}) {
         <SafeAreaView style={styles.container}>
 
             <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginLeft: 10, marginTop: 20}} color={'orange'}/>
-            <Text>what dahek</Text>
             <Text style={{fontSize: 27, marginTop: 20, fontWeight: 'bold', marginLeft: 10}}> Tasks in {label.lname}: </Text>
 
             {filterTasks(label.lname)}

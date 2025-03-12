@@ -18,6 +18,7 @@
     "expo-av": "~15.0.2",
     "expo-linear-gradient": "^14.0.2",
     "expo-location": "~18.0.7",
+    "expo-notifications": "~0.29.13",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.4.0",
     "react": "18.3.1",
@@ -29,8 +30,7 @@
     "react-native-tableview-simple": "^4.4.1",
     "react-native-timer-picker": "^2.1.0",
     "react-native-vector-icons": "^10.2.0",
-    "react-timer-hook": "^3.0.8",
-    "expo-notifications": "~0.29.13"
+    "react-timer-hook": "^3.0.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

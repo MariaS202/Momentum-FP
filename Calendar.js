@@ -5,6 +5,7 @@ import Modal from "react-native-modal";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TasksContext } from "./Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 export default function Cal() {
@@ -41,7 +42,7 @@ export default function Cal() {
     }
 
     // https://stackoverflow.com/questions/71211383/how-to-add-functionality-to-the-agenda-component-in-react-native-calendars
-    const onItemSubmit = () =>{
+    const onItemSubmit = () => {
         let items = events
         let mark = {...marksDate}
         let event_details = {
@@ -57,7 +58,7 @@ export default function Cal() {
         mark[event_details.date] = {
             customStyles: {
                 container: {
-                backgroundColor: 'orange',
+                    backgroundColor: 'orange',
                 },
                 text: {
                     color: 'white',
@@ -74,17 +75,20 @@ export default function Cal() {
 
     return (
         <View style={styles.container}>
-            <Text style={{fontSize: 27, marginTop: 35, fontWeight: 'bold'}}>Calendar</Text>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10}}>
-                <Text style={{fontSize: 23}}>{dayNames[d.getDay()]}</Text>
-                <Text style={{fontSize: 20}}>{currentDate()}</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginBottom: 20}}>
+                <Text style={{fontSize: 30, marginTop: 35, fontWeight: 'bold'}}>Calendar</Text>
+                <Text style={{fontSize: 23, marginTop: 35, alignSelf:'center', fontStyle: 'italic'}}>{dayNames[d.getDay()]}</Text>
+                {/* <Text style={{fontSize: 20}}>{currentDate()}</Text> */}
             </View>
-
+            
             <Agenda 
                 items={events}
+                style={{
+                    borderRadius: 30,
+                }}
                 renderItem={(item)=> {
                     return (
-                        <View style={{backgroundColor: 'rgb(255, 200, 137)', marginTop: 15,     marginRight: 10, padding: 10, borderRadius: 10}}>
+                        <View style={{backgroundColor: 'aliceblue', marginTop: 15, marginRight: 10, padding: 10, borderRadius: 10}}>
                             <Text>{item.name}</Text>
                             <Text>{item.description}</Text>
                         </View>
@@ -92,7 +96,9 @@ export default function Cal() {
                 }}
                 renderEmptyData={() => {
                     return (
-                        <Text style={{textAlign:'center', marginTop: 50, fontSize: 17}}> No Events today!</Text>
+                        <View style={{}}>
+                            <Text style={{textAlign:'center', marginTop: 50, fontSize: 17}}> No events added for this day</Text>
+                        </View>
                     );
                 }}
                 markingType={'custom'}
@@ -100,9 +106,21 @@ export default function Cal() {
                 theme={{
                     agendaDayNumColor: 'black',
                     agendaTodayColor: 'red',
-                    agendaKnobColor: 'orange'
+                    agendaKnobColor: 'orange',
+                    textDayFontSize: 19,
+                    textDayHeaderFontWeight: 'bold',
+                    textDayHeaderFontSize: 14, // sun,mon,tues ...
+                    textSectionTitleColor: 'orange',
+                    textMonthFontSize: 20,
+                    todayBackgroundColor: 'aliceblue',
+                    textDayFontWeight: 'bold',
+                    reservationsBackgroundColor : 'aliceblue'
                 }}
+                showClosingKnob
+                
+                
             />
+            
 
             {/* Add new event */}
 
@@ -159,20 +177,23 @@ export default function Cal() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'aliceblue',
         padding: 20,
     },
     add_event: {
         borderWidth: 1,
         borderRadius: 20,
-        marginLeft: 200,
+        borderColor: 'white',
         marginTop: 10,
         height: 50,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        padding: 10,
+        backgroundColor: 'lemonchiffon',
+        shadowColor: 'white',
     },
     add_event_text: {
-        fontSize: 17,
+        fontSize: 20,
         fontWeight: 'bold'
     },
     new_event_modal: {
