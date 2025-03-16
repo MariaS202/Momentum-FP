@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { View, Text, StyleSheet, SafeAreaView, TextInput, KeyboardAvoidingView, Button, Touchable, TouchableOpacity} from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, TextInput, KeyboardAvoidingView, TouchableOpacity, ScrollView } from "react-native";
 import Home from './Home'
 import { auth } from "./firebaseConfig";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, } from "firebase/auth";
@@ -51,8 +51,8 @@ export default function Login({navigation}) {
     }
 
     return (
-        <SafeAreaView style={styles.container}>            
-            <KeyboardAvoidingView behavior="padding">
+        <ScrollView style={styles.container}>            
+            <KeyboardAvoidingView behavior='position'>
                 <Text style={styles.welcome_text}>Welcome to Momentum!</Text>
 
                 <View style={{flexDirection: 'row', justifyContent: 'space-around' , marginTop: 50}}> 
@@ -78,7 +78,7 @@ export default function Login({navigation}) {
                         {/* email and password view in sign up */}
                         <View style={{marginTop: 50, }}>
                             <TextInput 
-                            placeholder="Username"
+                            placeholder="First Name"
                             placeholderTextColor={"grey"}
                             onChangeText={setUsername}
                             style={styles.inputs}
@@ -157,7 +157,7 @@ export default function Login({navigation}) {
                     </View>
                 }
             </KeyboardAvoidingView>
-        </SafeAreaView>
+        </ScrollView>
     );
 }
 
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold',
         color: 'darkblue',
-        marginTop: 50,
+        marginTop: 80,
         alignSelf: 'center',
         
     },

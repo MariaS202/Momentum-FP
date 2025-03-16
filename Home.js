@@ -29,16 +29,15 @@ export default function Home() {
     const {value, setValue} = useContext(TasksContext)
     const {labelName, setLabelName} = useContext(TasksContext)
     const {email, setEmail} = useContext(TasksContext)
-
     // First, set the handler that will cause the notification
     // // to show the alert
-    Notifications.setNotificationHandler({
-        handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: false,
-        }),
-    });
+    // Notifications.setNotificationHandler({
+    //     handleNotification: async () => ({
+    //     shouldShowAlert: true,
+    //     shouldPlaySound: true,
+    //     shouldSetBadge: false,
+    //     }),
+    // });
     
     // Second, call scheduleNotificationAsync()
     // Notifications.scheduleNotificationAsync({
@@ -266,7 +265,7 @@ export default function Home() {
         <View style={styles.container}>
             <SafeAreaView>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style={styles.welcome_text}>Welcome Maria!</Text>
+                    <Text style={styles.welcome_text}>Welcome!</Text>
                     <MaterialCommunityIcons name='bell' color='black' size={30} style={{marginTop: 13}}/>
                 </View>
                 {/* current weather box */}
@@ -275,17 +274,18 @@ export default function Home() {
                         <Text style={{alignSelf: 'center', fontSize: 18, marginTop: 10, marginBottom: 10, fontWeight: '600', textDecorationLine: 'underline'}}>Current weather</Text>
                     </View>
 
-                    {/* <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-                        <View>
-                            <Text style={{marginLeft: 15, fontSize: 17, marginBottom: 5}}> {location.name} </Text>
-                            <Text style={{marginLeft: 15, fontSize: 17, fontWeight: 'bold', alignSelf: 'center', marginBottom: 5}}>{Math.round(location.main.temp)}°C</Text>
-                            <Text style={{marginLeft: 15, marginBottom: 15, alignSelf: 'center', fontSize: 17, fontStyle: 'italic'}}> {location.weather[0].description} </Text>
-                        </View>
-                        
-                        <Image style={{width: 60, height: 60,}} 
-                            source={{uri: 'https://openweathermap.org/img/wn/' + location.weather[0].icon + '@2x.png'}} 
-                        />    
-                    </View> */}
+                    {location &&
+                        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                            <View>
+                                <Text style={{marginLeft: 15, fontSize: 17, marginBottom: 5}}> {location.name} </Text>
+                                <Text style={{marginLeft: 15, fontSize: 17, fontWeight: 'bold', alignSelf: 'center', marginBottom: 5}}>{Math.round(location.main.temp)}°C</Text>
+                                <Text style={{marginLeft: 15, marginBottom: 15, alignSelf: 'center', fontSize: 17, fontStyle: 'italic'}}> {location.weather[0].description} </Text>
+                            </View>
+                            
+                            <Image style={{width: 60, height: 60,}} 
+                                source={{uri: 'https://openweathermap.org/img/wn/' + location.weather[0].icon + '@2x.png'}} 
+                            />    
+                        </View>}
                 </View>
 
                 {/* current tasks section */}
