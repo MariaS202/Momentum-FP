@@ -12,6 +12,7 @@ import { TasksProvider } from'./Context'
 import FilteredTasks from './FilteredTasks';
 import Pomodoro from './Pomodoro';
 import TimeTrack from './TimeTrack';
+import UpcomingTasks from './UpcomingTasks';
 
 export default function App(){
 
@@ -71,6 +72,7 @@ export default function App(){
                     <Stack.Screen name='FilteredTasks' component={FilteredTasks}/>
                     <Stack.Screen name='Pomodoro' component={Pomodoro}/>
                     <Stack.Screen name='TimeTrack' component={TimeTrack}/>
+                    <Stack.Screen name='UpcomingTasks' component={UpcomingTasks}/>
                 </Stack.Navigator>
             </NavigationContainer>
         </TasksProvider>

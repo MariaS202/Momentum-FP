@@ -284,15 +284,6 @@ export default function Cal() {
                     backdropOpacity={0.4}>
                     <View style={styles.new_event_modal}>
                         <Text style={styles.modal_title}>Add new event to the Calendar</Text>
-                        {/* date picker */}
-                        <View style={styles.event_date}>
-                            <Text style={{fontSize: 16, fontWeight: '500'}}>Select Date:</Text>
-                            <DateTimePicker 
-                                mode="date"
-                                value={date}
-                                onChange={changeDate}
-                            />
-                        </View>
                         {/* Text Inputs for name and description */}
                         <TextInput 
                             value={title}
@@ -301,6 +292,26 @@ export default function Cal() {
                             placeholderTextColor={'grey'}
                             style={styles.event_name}
                         />
+                        <TextInput 
+                            multiline
+                            maxLength={200}
+                            value={desc}
+                            onChangeText={setDesc}
+                            placeholder="Event description"
+                            placeholderTextColor={'grey'}
+                            style={styles.event_desc}
+                        />
+
+                        {/* date picker */}
+                        <View style={styles.event_date}>
+                            <Text style={{fontSize: 17, fontWeight: '500'}}>Select Date:</Text>
+                            <DateTimePicker 
+                                mode="date"
+                                value={date}
+                                onChange={changeDate}
+                            />
+                        </View>
+                        
                         {/* View containing time pickers for start time and end time */}
                         <View style={styles.times}>
                             <View style={{alignItems: 'center'}}>
@@ -321,16 +332,6 @@ export default function Cal() {
                                 />
                             </View>
                         </View>
-
-                        <TextInput 
-                            multiline
-                            maxLength={200}
-                            value={desc}
-                            onChangeText={setDesc}
-                            placeholder="Event description"
-                            placeholderTextColor={'grey'}
-                            style={styles.event_desc}
-                        />
 
                         <View style={{flexDirection: 'row', justifyContent: 'space-around', margin: 10}}>
                             <Button title="discard" onPress={toggleModal} />
@@ -415,7 +416,7 @@ const styles = StyleSheet.create({
     times: {
         marginTop: 20,
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-around',
     },
 
 });

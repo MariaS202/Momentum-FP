@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "fp_app",
-    "slug": "fp_app",
+    "slug": "momentumfp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,10 +19,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.mariasanage.momentumfp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6c4bcb45-db43-46f5-8c15-fb9dea594c26"
+      }
+    },
+    "owner": "mariasanage"
   }
 }

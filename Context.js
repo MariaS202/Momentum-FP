@@ -11,10 +11,12 @@ export const TasksProvider = ({ children }) => {
     const [name, setName] = useState(null)
     const [email, setEmail] = useState('')
     const [pass, setPass] = useState('')
-
+    const [time, setTime] = useState(new Date())
+    const [taskDate, setTaskDate] = useState(new Date())
+    const [upTasks, setUpTasks] = useState([])
 
     return (
-        <TasksContext.Provider value={{ tasks, setTasks, labels, setLabels, value, setValue, labelName, setLabelName, focusTasks, setFocusTasks, name, setName, email, setEmail, pass, setPass }}>
+        <TasksContext.Provider value={{ tasks, setTasks, labels, setLabels, value, setValue, labelName, setLabelName, focusTasks, setFocusTasks, name, setName, email, setEmail, pass, setPass, time, setTime, taskDate, setTaskDate , upTasks, setUpTasks}}>
         {children}
         </TasksContext.Provider>
     );

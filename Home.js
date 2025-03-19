@@ -9,8 +9,9 @@ import Labels from "./Labels";
 import { TasksContext } from "./Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from 'expo-notifications';
+import UpcomingTasks from "./UpcomingTasks";
 
-export default function Home() {
+export default function Home({navigation}) {
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);	
     const [isModalVisible, setModalVisible] = useState(false);
@@ -20,36 +21,104 @@ export default function Home() {
     const [taskName, setTaskName] = useState('')
     const [taskNotes, setTaskNotes] = useState('')
     const [empTasks, setEmpTasks] = useState(true)
-    const [time, setTime] = useState(new Date())
-    const [taskDate, setTaskDate] = useState(new Date())
     const [editTaskView, setEditTaskView] = useState(false)
     const [addTaskView, setAddTaskView] = useState(false)
+    const [select1, setSelect1] = useState(true)
+    const [select2, setSelect2] = useState(true)
+    const [select3, setSelect3] = useState(true)
+    const [reminder, setReminder] = useState('')
+    const toggleSelect1 = () => {
+        setSelect1(!select1)
+    } 
+    const toggleSelect2 = () => {
+        setSelect2(!select2)
+    }
+    const toggleSelect3 = () => {
+        setSelect3(!select3)
+    }
+    const {time, setTime} = useContext(TasksContext)
+    const {taskDate, setTaskDate} = useContext(TasksContext)
     const {tasks, setTasks} = useContext(TasksContext)
     const {labels} = useContext(TasksContext)
     const {value, setValue} = useContext(TasksContext)
     const {labelName, setLabelName} = useContext(TasksContext)
     const {email, setEmail} = useContext(TasksContext)
-    // First, set the handler that will cause the notification
-    // // to show the alert
-    // Notifications.setNotificationHandler({
-    //     handleNotification: async () => ({
-    //     shouldShowAlert: true,
-    //     shouldPlaySound: true,
-    //     shouldSetBadge: false,
-    //     }),
-    // });
-    
-    // Second, call scheduleNotificationAsync()
-    // Notifications.scheduleNotificationAsync({
-    //     content: {
-    //       title: "Time's up!",
-    //       body: 'Change sides!',
-    //     },
-    //     trigger: {
-    //     //   type: SchedulableTriggerInputTypes.TIME_INTERVAL,
-    //     //   seconds: 60,
-    //     },
-    //   });
+    const {upTasks, setUpTasks} = useContext(TasksContext)
+
+    Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+        }),
+    });
+
+    const handleReminders = (name, date) => {
+        if(select1 === false && select2 === false && select3 === false) {
+            Notifications.cancelAllScheduledNotificationsAsync()
+            return
+        }
+        else if(reminder == '1 day before') {
+            const oneDayBefore = new Date(taskDate.getTime())
+            oneDayBefore.setDate(taskDate.getDate() - 1)
+            oneDayBefore.setTime(time.getTime())
+            
+            Notifications.cancelAllScheduledNotificationsAsync()
+            Notifications.scheduleNotificationAsync({
+                content: {
+                  title: `Reminder for Task ${name} on ${date}`,
+                  body: 'This is your scheduled reminder',
+                },
+                trigger: {
+                    type: 'date',
+                    date: oneDayBefore,
+                }
+            });
+            
+                        
+        }
+        else if(reminder == '3 days before') {
+            const threeDaysBefore = new Date(taskDate.getTime())
+            threeDaysBefore.setDate(taskDate.getDate() - 3)
+            threeDaysBefore.setTime(time.getTime())
+
+            Notifications.cancelAllScheduledNotificationsAsync()
+            Notifications.scheduleNotificationAsync({
+                content: {
+                  title: `Reminder for Task ${name} on ${date}`,
+                  body: 'This is your scheduled reminder',
+                },
+                trigger: {
+                    type: 'date',
+                    date: threeDaysBefore,
+                }
+            });
+        }
+        else if(reminder == '1 week before') {
+            const oneWeekBefore = new Date(taskDate.getTime())
+            oneWeekBefore.setDate(taskDate.getDate() - 7)
+            console.log(oneWeekBefore.toLocaleDateString([]).split(', ')[0]);
+            oneWeekBefore.setTime(time.getTime())
+
+            Notifications.cancelAllScheduledNotificationsAsync()
+            Notifications.scheduleNotificationAsync({
+                content: {
+                  title: `Reminder for ${name} on ${date}`,
+                  body: 'This is your scheduled reminder',
+                },
+                trigger: {
+                    type: 'date',
+                    date: oneWeekBefore,
+                }
+            });
+        }
+    }
+
+    //  to check that all the notifications are scheduled correctly
+    const checkNotifications = async() => {
+        const allNotifications = await Notifications.getAllScheduledNotificationsAsync()
+        console.log(allNotifications);
+    }
 
     const changeDate = (event, date) => {
         const {
@@ -106,13 +175,14 @@ export default function Home() {
     }
 
     const onTaskSubmit = async() => {
-        console.log("task submitted");
-
+        
         const newTask = {
             name: taskName,
             notes: taskNotes,
-            label: labelName
+            label: labelName,
+            date: taskDate.toLocaleDateString([]).split(', ')[0], // selected date of the task
         }
+        
         if (newTask.notes === "") {
             newTask.notes = 'no notes provided'
             setTasks([...tasks, newTask.notes])
@@ -121,19 +191,29 @@ export default function Home() {
             alert('task fields are empty')
             setTasks([])
             return
+        } 
+        
+        if(newTask.date === new Date().toLocaleDateString([]).split(', ')[0]) {
+            setTasks([...tasks, newTask])
+            storeTasks([...tasks, newTask])
         }
-
-        setTasks([...tasks, newTask])
-        storeTasks([...tasks, newTask])
+        else {
+            console.log('dat eis ahead');
+            setUpTasks([...upTasks, newTask])
+        }
+        // setTasks([...tasks, newTask])
         setTaskName("")
         setTaskNotes("")
         setLabelName("")
+        setTaskDate(new Date())
+        // scheduleNotif(newTask.date)
+        handleReminders(newTask.name, newTask.date)
+        checkNotifications()
     }
  
     const getTasks = async() => {
         try {
             const jsonValue = await AsyncStorage.getItem(`${email}_tasks_key`);
-            console.log('retrieving', tasks);
             return jsonValue != null ? setTasks(JSON.parse(jsonValue)) : setTasks([])
 
         } catch (e) {
@@ -175,98 +255,31 @@ export default function Home() {
         isTodaysTaskEmpty();
     }, [tasks])
     
-    const emptyTask = () => {
-        if(empTasks === true) return <Text style={styles.emptyTaskText}>Add Tasks to get started!</Text>
-    }
-
-    const edit = (index) => {
-        console.log('bruh');
-        
-        return (
-            <View>
-                <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
-                    <View style={styles.modal}>
-                        <Text style={styles.add_task_text}>Edit Task</Text>
-                        {/* task name */}
-                        <TextInput value={tasks[index].name} onChangeText={setTaskName} 
-                            // placeholder={tasks[index].name}
-                            style={styles.task_text}
-                        />
-                        {/* additional notes for the task */}
-                        <TextInput value={taskNotes} onChangeText={setTaskNotes}
-                            multiline
-                            maxLength={1000}
-                            placeholder="Task Description/Notes"
-                            placeholderTextColor={'grey'}
-                            style={styles.task_notes}
-                        />
-                        {/* Assigning an existing Label to a task */}
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                            <Text style={{marginLeft: 25, alignSelf: 'center', fontSize: 18}}>Labels:</Text>
-                            <SelectCountry
-                                style={styles.dropdown}
-                                selectedTextStyle={styles.selectedTextStyle}
-                                maxHeight={200}
-                                value={value}
-                                data={labels}
-                                valueField="value"
-                                labelField="lname"
-                                onChange={e => {
-                                    setValue(e.value);
-                                    setLabelName(e.lname);
-                                }}
-                            />
-                            
-                        </View>
-
-                        {/* Scheduling tasks */}
-                        <View>
-                            <Text style={{alignSelf: 'center', fontSize: 18}}>Schedule task on:</Text> 
-
-                            <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10}}>
-                                <DateTimePicker 
-                                    mode="date"
-                                    value={taskDate}
-                                    onChange={changeDate}
-                                    textColor="black"
-                                />
-                                <DateTimePicker 
-                                    mode="time"
-                                    value={time}
-                                    onChange={changeTime}
-                                />
-                                {console.log(taskDate)}
-                            </View>
-                        </View>
-
-                        {/* Set Reminder */}
-                        <View>
-                            <Text style={{marginLeft: 25, fontSize: 18}}>Set Reminder: </Text>
-                        </View>
-
-
-                        {/* Discard and saving tasks buttons */}
-                        <View style={{flexDirection: 'row', alignSelf: 'center', marginTop: 20}}>
-                            <Button title="Discard Task" color={'black'} onPress={toggleModal}/>
-                            <Button title="Save Task" color={'black'} 
-                                onPress={()=> {
-                                    onTaskSubmit()
-                                    toggleModal()
-                                }}/>
-                        </View>
-                    </View>
-                </Modal>
-
-            </View>
-        )
-    }
     
+    // filtering tasks for today only and then using this in the flatlist to render todays tasks
+    const tasksForToday = tasks.filter(tasks=> tasks.date === new Date().toLocaleDateString([]).split(', ')[0])
+    
+    const emptyTask = () => {
+        if(empTasks === true) {
+            return (
+                <Text style={styles.emptyTaskText}>Add Tasks to get started!</Text>
+            )
+        }
+        else if(tasksForToday.length === 0){
+            return (
+                <Text style={styles.emptyTaskText}>No tasks for today</Text>
+            )
+        }
+    }
     return (
         <View style={styles.container}>
             <SafeAreaView>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <Text style={styles.welcome_text}>Welcome!</Text>
-                    <MaterialCommunityIcons name='bell' color='black' size={30} style={{marginTop: 13}}/>
+                    <MaterialCommunityIcons name='clipboard-text-clock' color='green' size={35} style={{marginTop: 13}}
+                    onPress={()=> {
+                        navigation.navigate('UpcomingTasks')
+                    }}/>
                 </View>
                 {/* current weather box */}
                 <View style={styles.weather}>
@@ -292,30 +305,32 @@ export default function Home() {
                 <View style={styles.current_tasks}>
                     <Text style={{alignSelf: 'center', fontSize: 18, marginTop: 10, marginBottom: 10, fontWeight: '600', textDecorationLine: 'underline'}}>Tasks for today</Text>
                     <ScrollView>   
-                        {emptyTask()}                
+                        {emptyTask()}             
                             <FlatList
-                                data={tasks}
+                                data={tasksForToday}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({item, index}) => (
-                                    <View style={styles.task_cell}>
+                                    <TouchableOpacity style={styles.task_cell}>
                                         <MaterialCommunityIcons name='circle-edit-outline' size={30} color={'orange'} 
-                                        style={{ marginRight: 20, alignSelf :'center'}} 
+                                        style={{marginRight: 20, alignSelf :'center'}} 
                                         onPress={() => {
                                             setEditTaskView(true)
                                             setAddTaskView(false)
                                             toggleModal()                                    
                                         }}/>
-                                        {editTaskView && edit(index)}
-                                        <View>
-                                            <Text style={{fontSize: 17, fontWeight: '500'}}>{item.name}</Text>
-                                            <Text style={{color: 'grey'}}>{item.notes}</Text>
+                                        
+                                        {/* {editTaskView && edit(index)} */}
+                                        <View style={{flex: 1}}>
+                                            <Text style={{fontSize: 17, fontWeight: '500', flexWrap: 'wrap' }}>{item.name}</Text>
+                                            <Text style={{color: 'grey', flexWrap: 'wrap' }}>{item.notes}</Text>
                                             <Text>{item.label}</Text>
                                         </View>
+                                        
                                         <MaterialCommunityIcons name='check-circle-outline' size={35} color={'green'} 
-                                        style={{ marginRight: 5, alignSelf :'center', }} 
+                                        style={{alignSelf :'center'}} 
                                         onPress={() => onTaskComplete(index)}
                                         />
-                                    </View>
+                                    </TouchableOpacity>
                                 )}
                             />
                     </ScrollView>
@@ -332,7 +347,7 @@ export default function Home() {
                         setEditTaskView(false)
                         toggleModal()
                     }}>
-                    <Text style={{margin: 10, fontSize: 18.5, fontStyle: 'italic', fontWeight: 'bold'}}>Add Task</Text>                   
+                    <Text style={{margin: 10, fontSize: 20, fontWeight: 'bold'}}>Add Task</Text>                   
             
                     {addTaskView && 
                     <View>
@@ -392,15 +407,12 @@ export default function Home() {
                                             placeholder="Select Label"
                                         />
                                     )}
-                                  
-
                                 </View>
 
                                 {/* Scheduling tasks */}
-                                <View>
+                                <View style={{borderWidth: 1, marginLeft: 25, marginRight: 25, padding: 10, borderRadius: 30, backgroundColor: 'white'}}>
                                     <Text style={{alignSelf: 'center', fontSize: 18}}>Schedule task on:</Text> 
-
-                                    <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10}}>
+                                    <View style={{flexDirection: 'row', marginTop: 10, justifyContent: 'center'}}>
                                         <DateTimePicker 
                                             mode="date"
                                             value={taskDate}
@@ -412,13 +424,44 @@ export default function Home() {
                                             value={time}
                                             onChange={changeTime}
                                         />
-                                        {/* {console.log(taskDate)} */}
+                                        
                                     </View>
                                 </View>
 
                                 {/* Set Reminder */}
-                                <View>
-                                    <Text style={{marginLeft: 25, fontSize: 18}}>Set Reminder: </Text>
+                                <View style={{marginTop: 10}}>
+                                    <Text style={{marginLeft: 25, fontSize: 18, alignSelf: 'center'}}>Set Reminder: </Text>
+                                    <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 7}}>
+                                        <TouchableOpacity style={ select1 ? styles.onSelection : styles.noSelection} 
+                                        onPress={()=> {
+                                            toggleSelect1()
+                                            setSelect2(false)
+                                            setSelect3(false)
+                                            setReminder('1 day before')
+                                        }}>
+                                            <Text style={{alignSelf: 'center'}}>1 day before</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={select2 ? styles.onSelection : styles.noSelection}
+                                         onPress={() => {
+                                            toggleSelect2()
+                                            setSelect1(false)
+                                            setSelect3(false)
+                                            setReminder('3 days before')
+                                         }}>
+                                            <Text>3 days before</Text>
+                                        </TouchableOpacity>
+                                        
+                                        <TouchableOpacity style={select3 ? styles.onSelection : styles.noSelection} 
+                                        onPress={() => {
+                                            toggleSelect3()
+                                            setSelect1(false)
+                                            setSelect2(false)
+                                            setReminder('1 week before')
+                                        }}>
+                                            <Text>1 week before</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
 
 
@@ -438,8 +481,6 @@ export default function Home() {
                     }
                 
                 </TouchableOpacity>
-
-            
             </SafeAreaView>
         </View>
     );
@@ -448,12 +489,12 @@ export default function Home() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'aliceblue',
         padding: 15,
     },
     welcome_text: {
         fontWeight: 'bold',
-        fontSize: 30,
+        fontSize: 33,
         marginTop: 10,
         marginBottom: 20
     },
@@ -473,11 +514,9 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     add_tasks: {
-        // margin: 5, 
         alignItems:'center',
         borderWidth: 2,
         borderRadius: 20,
-        alignSelf: 'flex-end'
     },
     add_task_text: {
         fontWeight: 'bold',
@@ -506,15 +545,16 @@ const styles = StyleSheet.create({
     },
     task_cell: {
         flexDirection: 'row', 
+        // justifyContent: 'space-between',
         margin: 10,
         padding: 10,
         borderWidth: 1,
-        borderRadius: 20
+        borderRadius: 20,
     },
     modal: {
         width: 370, 
-		height: 600, 
-		backgroundColor: 'white', 
+		height: 650, 
+		backgroundColor: 'aliceblue', 
 		borderRadius: 20, 
         alignSelf: 'center'
     },
@@ -538,5 +578,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginLeft: 8,
     },
+    onSelection: {
+        borderWidth: 2, 
+        padding: 7, 
+        borderRadius: 15, 
+        borderColor: 'orange',
+    },
+    noSelection: {
+        borderWidth: 1, 
+        padding: 7, 
+        borderRadius: 15
+    }
 
 });
