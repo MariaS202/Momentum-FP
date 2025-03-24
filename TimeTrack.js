@@ -92,17 +92,24 @@ export default function TimeTrack({navigation}) {
         return (
             <View>
                 <View style={{flexDirection: 'row', alignSelf:'center'}}>
-                    <Text>{hours < 10 ? '0' : ''}{hours}:</Text>
-                    <Text>{minutes < 10 ? '0' : ''}{minutes}:</Text>
-                    <Text>{seconds < 10 ? '0' : ''}{seconds}</Text>
+                    <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'navy'}}>{hours < 10 ? '0' : ''}{hours}:</Text>
+                    <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'goldenrod'}}>{minutes < 10 ? '0' : ''}{minutes}:</Text>
+                    <Text style={{fontSize: 45, fontFamily: 'Tomorrow',}}>{seconds < 10 ? '0' : ''}{seconds}</Text>
                 </View>
 
-                <Text style={{alignSelf:'center'}}>{isRunning ? 'Timer has started!' : 'Start your Timer!'}</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40}}>
+                    <TouchableOpacity style={styles.timer_controls}
+                    onPress={start}> 
+                        <Text  style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>START</Text>
+                    </TouchableOpacity>
 
-                <View style={{flexDirection: 'row'}}>
-                    <Button title="Start" onPress={start}/>
-                    <Button title="Pause" onPress={pause}/>
-                    <Button title="Reset" onPress={reset}/>
+                    <TouchableOpacity onPress={pause} style={styles.timer_controls}>
+                        <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>PAUSE</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.timer_controls}
+                    onPress={reset}>
+                        <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>RESET</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
@@ -111,8 +118,11 @@ export default function TimeTrack({navigation}) {
     return (
         <SafeAreaView style={styles.container}>
 
-            <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginLeft: 10, }} color={'orange'}/>
-            <Text style={{fontSize: 35,  fontWeight: 'bold', alignSelf: 'center'}}>Time Track</Text>
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+                <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginLeft: 20, marginRight: 40}} color={'orange'}/>
+
+                <Text style={{fontSize: 35,  alignSelf: 'center', fontFamily: 'Tomorrow', color: 'navy'}}>TIME TRACK</Text>
+            </View>
 
             <View style={styles.timer_view}>
                 <Text style={styles.task_name}>{name}</Text>
@@ -121,45 +131,45 @@ export default function TimeTrack({navigation}) {
 
             <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
                 <TouchableOpacity onPress={toggleModal}>
-                    <Text style={styles.bs_title}>Background Sounds</Text>
+                    <Text style={styles.bs_title}>BACKGROUND SOUNDS</Text>
 
                     {/* Modal containing 5 background sounds (looped) */}
                     <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
                         <View style={styles.modal}> 
-                            <Text style={{fontSize: 17, flexWrap: 'wrap', alignSelf: 'center', marginTop: 15, margin: 10, textAlign: 'center'}}>Background Sounds for your focus sessions</Text>
+                            <Text style={{fontSize: 19, flexWrap: 'wrap', alignSelf: 'center', marginTop: 15, margin: 10, textAlign: 'center', fontFamily: 'Tomorrow', color: 'navy'}}>Background Sounds for your focus sessions</Text>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Ocean waves</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound1} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>OCEAN WAVES</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound1} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Brown noise</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound2} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>BROWN NOISE</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound2} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Nature Sounds</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound3} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>NATURE SOUNDS</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound3} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Fire crackling sound</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound4} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>FIRE CRACKLING SOUNDS</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound4} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Rain Sounds</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound5} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>RAIN SOUNDS</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound5} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
-                            <View style={{flexDirection:'row', justifyContent: 'space-evenly'}}>
+                            <View style={{flexDirection:'row', justifyContent: 'space-around', marginTop:30}}>
                                 <TouchableOpacity style={styles.stop_sound} onPress={stopSound}>
-                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: 'bold'}}>Stop Sound</Text>
+                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: 'bold', fontFamily: 'Tomorrow', color: 'navy'}}>STOP SOUND</Text>
                                 </TouchableOpacity>
                                 
                                 <TouchableOpacity onPress={toggleModal} style={{alignSelf: 'center'}}> 
-                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: '500', color: 'blue'}}>Close</Text>
+                                    <Text style={{alignSelf: 'center', fontSize: 17, color: 'grey', fontFamily: 'Tomorrow'}}>CLOSE</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -167,7 +177,7 @@ export default function TimeTrack({navigation}) {
                     </Modal>
                 </TouchableOpacity>
 
-                <MaterialCommunityIcons name="stop-circle-outline" size={60} onPress={stopSound} style={{alignSelf: 'center'}}/>
+                <MaterialCommunityIcons name="stop-circle" size={50} onPress={stopSound} style={{alignSelf: 'center'}} color={'navy'}/>
             </View>
         </SafeAreaView>
     );
@@ -176,56 +186,70 @@ export default function TimeTrack({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'lightyellow',
     },
     timer_view: {
         borderWidth: 1,
         borderRadius: 20,
-        alignItems: 'center',
-        margin: 25,
-        height: 400
+        margin: 20,
+        padding: 15,
+        borderLeftWidth: 5,
+        borderBottomWidth: 5,
+        borderColor: 'goldenrod'
     },
     modal: {
         width: 350, 
 		height: 550, 
-		backgroundColor: 'white', 
+		backgroundColor: 'aliceblue', 
 		borderRadius: 20, 
         alignSelf: 'center'
     },
     bs_title: {
-        borderWidth: 1, 
+        borderWidth: 2, 
         padding: 10, 
         margin: 10, 
         borderRadius: 15, 
         alignSelf: 'center', 
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: 'Tomorrow',
+        color: 'navy',
+        borderColor: 'goldenrod'
     },
     sound: {
         borderWidth: 1,
-        margin: 10,
+        marginTop: 15,
         marginLeft: 20,
         marginRight: 20,
         padding: 10,
         borderRadius: 20,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        backgroundColor: 'white',
+        borderBottomWidth: 3,
+        borderColor: 'navy'
     },
     stop_sound: {
-        margin: 10,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        borderWidth: 2,
+        borderWidth: 3,
         alignSelf: 'center',
         padding: 10,
-        borderRadius: 20
+        borderRadius: 15,
+        borderColor: 'goldenrod'
     },
     task_name: {
         fontSize: 25,
         alignSelf: 'center',
         fontWeight: '500',
-        color: 'darkslateblue',
-        fontStyle: 'italic'
+        color: 'midnightblue',
+        fontFamily: 'Noto-arabic'
     },
+    timer_controls: {
+        borderWidth: 2, 
+        padding: 7, 
+        borderRadius: 10, 
+        borderColor: 'navy'
+    }
 
 });

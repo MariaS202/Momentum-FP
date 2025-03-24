@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function UpcomingTasks({navigation}) {
     const {upTasks, setUpTasks} = useContext(TasksContext)
     const {email} = useContext(TasksContext)
+    const {tasks, setTasks} = useContext(TasksContext)
     const [empty, setEmpty] = useState(false)
 
     const storeUpcomingTasks = async(val) => {
@@ -55,43 +56,55 @@ export default function UpcomingTasks({navigation}) {
         }
     }
 
+    const handleTasks = (index) => {
+        if(upTasks[index].date === new Date().toLocaleDateString()) {
+            console.log('dates equal');
+            const removeTask = [...upTasks]
+            removeTask.splice(index, 1)
+            setUpTasks(removeTask)
+            setTasks([...tasks, upTasks[index]])
+        }
+    }
+
     const upcomingTasks = () => {
         
         if(upTasks.length > 0) {
             storeUpcomingTasks(upTasks)
+            console.log(upTasks);
             
-            console.log('UPCOMING TASKS: ', upTasks);
             return (                
-                <FlatList 
-                data={upTasks}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({item, index}) => (
-                        <View style={styles.task_cell}>
-                            <View style={{flex: 1}}>
-                                <Text style={styles.up_task_name}>{item.name}</Text>
-                                <Text style={styles.up_task_date}>Task Scheduled On: {item.date}</Text>
-                            </View>
-                            
-                            <MaterialCommunityIcons name="delete-circle-outline" size={40} onPress={()=> removeUpcomingTasks(index)} style={{marginRight: 5, alignSelf:'center'}} color={'red'}/>
-                                
+            <FlatList 
+            data={upTasks}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({item, index}) => (
+                    <View style={styles.task_cell}>
+                        <View style={{flex: 1}}>
+                            <Text style={styles.up_task_name}>{item.name}</Text>
+                            <Text style={styles.up_task_date}>Task Scheduled On: {item.date}</Text>
                         </View>
-                    )}
-                    />
-                )
-            } else {
-                return (
-                    <View style ={{flex:1, backgroundColor: 'lemonchiffon', }}> 
-                        <Text style={{alignSelf: 'center', fontSize: 25, marginTop: 100, fontFamily: 'arial'}}>There are no Upcoming Tasks </Text>
+                        {handleTasks(index)}
+                        <MaterialCommunityIcons name="delete-circle" size={40} onPress={()=> removeUpcomingTasks(index)} style={{ alignSelf:'center'}} color={'red'}/>
+                            
                     </View>
-                )
-            }
+                )}
+                />
+            )
+        } 
+        else if(upTasks.length === 0){
+            return (
+                <View style ={{backgroundColor: 'white', borderRadius: 40, padding: 30, }}> 
+                    <Text style={{alignSelf: 'center', fontSize: 25, fontFamily: 'Sriracha', color: 'lightsalmon',  textAlign: 'center'}}>There are no Upcoming Tasks</Text>
+                </View>
+            )
+        }
+        
     }
 
     return (
         <View style={styles.container}>
-            <View style={{flexDirection: 'row', marginTop: 30,}}>
-                <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginRight: 20,}} color={'orange'}/>
-                <Text style={{fontSize: 27, fontWeight: 'bold', alignSelf: 'flex-end', marginBottom: 6}}>Upcoming Tasks</Text>
+            <View style={{flexDirection: 'row', marginTop: 35, marginBottom: 10}}>
+                <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginRight: 20,}} color={'darkorange'}/>
+                <Text style={{fontSize: 25,  alignSelf: 'center', fontFamily: 'Tomorrow', color: 'midnightblue'}}>UPCOMING TASKS</Text>
 
             </View>
             {upcomingTasks()}
@@ -102,27 +115,30 @@ export default function UpcomingTasks({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'lightyellow',
         padding: 20,
     },
     task_cell: {
-        flexDirection: 'row',
-        justifyContent:'space-between',
-        margin: 10,
+        flexDirection: 'row', 
         padding: 10,
         borderWidth: 1,
-        borderRadius: 25
+        borderRadius: 20,
+        borderBottomWidth: 5,
+        borderColor: 'sandybrown',
+        marginTop: 15
     },
     up_task_name: {
         fontSize: 20,
         fontWeight: 'bold',
         marginLeft: 5,
-        flexShrink: 1
+        flexShrink: 1,
+        color: 'navy'
     },
     up_task_date: {
         fontSize: 16,
-        marginTop: 10,
-        marginLeft: 5
+        marginTop: 5,
+        marginLeft: 5,
+        color: 'navy'
     }
 
 });

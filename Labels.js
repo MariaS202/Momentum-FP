@@ -12,6 +12,12 @@ export default function Labels({navigation}) {
     const {labels, setLabels} = useContext(TasksContext)
     const {value} = useContext(TasksContext)
     const {email} = useContext(TasksContext)
+    const [empty, setEmpty] = useState(false)
+
+    useEffect(()=> {
+        if(labels.length > 0) setEmpty(false)
+        else setEmpty(true)
+    }, [labels])
 
     const storeLabels = async(val) => {
         try {
@@ -67,7 +73,6 @@ export default function Labels({navigation}) {
 
 
     const deleteLabel = async(index) => {
-
         Alert.alert('Delete Label?', `Are you sure that you want to delete ${labels[index].lname} label?`, [
             {
                 text: 'No',
@@ -89,20 +94,26 @@ export default function Labels({navigation}) {
 
     return (
         <View style={styles.container}>
-            <Text style={{fontSize: 27, marginTop: 35, fontWeight: 'bold'}}>Labels</Text>
-
-           
+            <Text style={{fontSize: 28, marginTop: 45, fontWeight: 'bold', fontFamily: 'Tomorrow', color: 'midnightblue'}}>LABELS</Text>
+                       
             <View style={{flexDirection: 'row', justifyContent :'space-around', marginTop: 15, marginBottom: 5}}>
                 <TextInput 
                     value={labelName}
                     onChangeText={setLabelName}
                     placeholder="Enter New Label Name"
                     placeholderTextColor={'grey'}
-                    style={{fontSize: 20, borderWidth: 1, padding: 10, borderRadius: 20, width: 320}}
+                    style={styles.inputs}
+                    // style={{fontSize: 20, borderWidth: 1, padding: 10, borderRadius: 20, width: 320}}
                     maxLength={25}
                 />
                 <MaterialCommunityIcons name="plus-box" size={40} color={'navy'} style={{alignSelf: 'center', marginLeft: 5}} onPress={addNewLabel}/>
             </View>
+
+            {empty && 
+                <View>
+                    <Text style={{alignSelf: 'center', flexDirection: 'column', fontFamily: 'Sriracha', fontSize: 20, textAlign: 'center', color: 'lightsalmon', marginTop: 20}}>Create Labels by entering label name and organise your tasks with ease!</Text>
+                </View>
+            }
 
             <FlatList
                 data={labels}
@@ -111,11 +122,15 @@ export default function Labels({navigation}) {
                     <TouchableOpacity style={styles.label} 
                         onPress={()=>navigation.navigate('FilteredTasks', {label: item})}>
 
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', }}>
+                        <MaterialCommunityIcons name='delete-circle' size={35} color={'red'} 
+                            style={{marginLeft: 0, marginRight: 10, alignSelf: 'center'}} 
+                            onPress={() => deleteLabel(index)}
+                        />
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', flex: 1}}>
                             <Text style={styles.label_text}>{item.lname}</Text>
-                            <MaterialCommunityIcons name='delete-circle-outline' size={35} color={'red'} 
+                            <MaterialCommunityIcons name='chevron-right-circle' size={35} color={'darkorange'} 
                                 style={{marginLeft: 20, marginRight: 5}} 
-                                onPress={() => deleteLabel(index)}
+                                onPress={()=>navigation.navigate('FilteredTasks', {label: item})}
                             />
                         </View>
 
@@ -131,7 +146,7 @@ export default function Labels({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'aliceblue',
         padding: 20,
     },
     new_label: {
@@ -153,7 +168,22 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         marginTop: 10,
-        padding: 5,
-    }
+        padding: 7,
+        borderBottomWidth: 3,
+        borderLeftWidth: 3,
+        borderBottomColor: 'midnightblue',
+        borderLeftColor: 'midnightblue',
+        flexDirection: 'row',
+        backgroundColor: 'white'   
+    },
+    inputs: {
+        borderWidth: 2,
+        borderColor: 'lightsteelblue',
+        fontSize: 20, 
+        padding: 15, 
+        borderRadius: 20, 
+        width: 320,
+        backgroundColor: 'whitesmoke'
+    },
 
 });

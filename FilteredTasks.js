@@ -10,6 +10,8 @@ export default function FilteredTasks({route, navigation}) {
     const {tasks, setTasks} = useContext(TasksContext)
     const {email} = useContext(TasksContext)
     const {label} = route.params
+    const [fTasks, setFTasks] = useState([])
+    const [empty, setEmpty] = useState(false)
 
     const storeFTasks = async(val) => {
         try {
@@ -21,14 +23,16 @@ export default function FilteredTasks({route, navigation}) {
         }
     }
 
-
     const onTaskComplete = async(index) => {
+        const taskFComp = [...fTasks]
+        taskFComp.splice(index, 1)
+        setFTasks(taskFComp)
         const taskComp = [...tasks]
         taskComp.splice(index, 1)
         setTasks(taskComp)
 
         try {
-            await AsyncStorage.setItem(`${email}_ftasks_key`, JSON.stringify(taskComp))
+            await AsyncStorage.removeItem(`${email}_ftasks_key`)
             console.log('removed filter');
             
         } catch (e) {
@@ -40,9 +44,16 @@ export default function FilteredTasks({route, navigation}) {
 
     const getTasks = async() => {
         try {
-            const jsonValue = await AsyncStorage.getItem(`${email}_tasks_key`);
+            const jsonValue = await AsyncStorage.getItem(`${email}_ftasks_key`);
             console.log('retrieving', tasks);
-            return jsonValue != null ? setTasks(JSON.parse(jsonValue)) : setTasks([])
+            if(jsonValue != null){
+                setFTasks(JSON.parse(jsonValue))
+                setTasks(JSON.parse(jsonValue))
+            }
+            else {
+                setFTasks([])
+                setTasks([])
+            }
 
         } catch (e) {
             console.log('error', e);
@@ -52,27 +63,29 @@ export default function FilteredTasks({route, navigation}) {
     useEffect(()=> {
         getTasks()
     }, [])
-    
 
+    useEffect(()=> {
+        if(fTasks.length !== 0) setEmpty(false)
+        else setEmpty(true)
+    }, [fTasks])
 
     const filterTasks = (name) => {
         const filteredTasks = tasks.filter(tasks => tasks.label === name)
-        storeFTasks(filterTasks)
+        storeFTasks(filteredTasks)
 
-        if(filteredTasks.length > 0){
+        if(fTasks.length > 0){
             return(
                 <View>
                     <FlatList 
-                        data={filteredTasks}
+                        data={fTasks}
                         keyExtractor={(item, index) => index.toString()} 
                         renderItem={({item, index}) => (
                             <TouchableOpacity style={styles.task_cell}>
                                 <View>
-                                    <Text style={{fontSize: 17, fontWeight: '500'}}>{item.name}</Text>
+                                    <Text style={{fontSize: 19, fontWeight: '600', color:'midnightblue'}}>{item.name}</Text>
                                     <Text style={{color: 'grey'}}>{item.notes}</Text>
                                 </View>
-                                <MaterialCommunityIcons name='check-circle-outline' size={35} color={'green'} 
-                                style={{marginLeft: 20, marginRight: 5}} 
+                                <MaterialCommunityIcons name='check-circle' size={35} color={'seagreen'}  
                                 onPress={() => onTaskComplete(index)}
                                 />
                             </TouchableOpacity>
@@ -90,11 +103,21 @@ export default function FilteredTasks({route, navigation}) {
 
     return (
         <SafeAreaView style={styles.container}>
-
-            <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginLeft: 10, marginTop: 20}} color={'orange'}/>
-            <Text style={{fontSize: 27, marginTop: 20, fontWeight: 'bold', marginLeft: 10}}> Tasks in {label.lname}: </Text>
+            <View style={{flexDirection: 'row', marginBottom: 15}}>
+                <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} 
+                onPress={()=> navigation.goBack()} 
+                style={{marginLeft: 10, marginTop: 20, alignSelf: 'center'}} 
+                color={'orange'}/>
+                <Text style={{fontSize: 30, marginTop: 20, fontWeight: 'bold', marginLeft: 10, fontFamily: 'Sriracha', alignSelf: 'center', color: 'midnightblue',}}> Tasks in {label.lname}: </Text>
+            </View>
 
             {filterTasks(label.lname)}
+
+            {empty && 
+                <View style={{backgroundColor: 'white', borderRadius: 40, justifyContent: 'center', padding: 30}}>
+                    <Text style={{fontFamily: 'Sriracha', fontSize: 25, textAlign:'center', alignSelf: 'center', color: 'lightsalmon',}}>No tasks are available under this label</Text>
+                </View>
+            }
         </SafeAreaView>
 
     );
@@ -103,15 +126,21 @@ export default function FilteredTasks({route, navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'lightyellow',
+        alignContent: 'center'
     },
     task_cell: {
         flexDirection: 'row', 
         justifyContent: 'space-between',
-        margin: 10,
-        padding: 10,
-        borderWidth: 1,
-        borderRadius: 20
+        margin: 7,
+        padding: 15,
+        borderWidth: 2,
+        borderRadius: 20,
+        borderColor: 'sandybrown',
+        borderBottomWidth: 5,
+        marginLeft: 20,
+        marginRight: 20,
+        
     },
 
 });

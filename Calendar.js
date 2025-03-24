@@ -7,6 +7,7 @@ import { TasksContext } from "./Context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Calendar from 'expo-calendar';
+import * as Notifications from 'expo-notifications';
 
 export default function Cal() {
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
@@ -20,18 +21,123 @@ export default function Cal() {
     const [id, setId] = useState(0)
     const [eventId, setEventId] = useState('')
     const [isModalVisible, setModalVisible] = useState(false);
-    const {email} = useContext(TasksContext)    
     const toggleModal = () => {
       setModalVisible(!isModalVisible);
     };
+    const [select1, setSelect1] = useState(true)
+    const [select2, setSelect2] = useState(true)
+    const [select3, setSelect3] = useState(true)
+    const [reminder, setReminder] = useState('')
+    const toggleSelect1 = () => {
+        setSelect1(!select1)
+    } 
+    const toggleSelect2 = () => {
+        setSelect2(!select2)
+    }
+    const toggleSelect3 = () => {
+        setSelect3(!select3)
+    }
+
+    const {email} = useContext(TasksContext) 
+   
+    // Notifications for event reminder
+    const handleReminders = (name, d) => {
+        if(select1 === false && select2 === false && select3 === false) {
+            Notifications.cancelAllScheduledNotificationsAsync()
+            return
+        }
+        else if(reminder == '1 day before') {
+            const oneDayBefore = new Date(date.getTime())
+            oneDayBefore.setDate(date.getDate() - 1)
+            oneDayBefore.setTime(startD.getTime())
+            
+            Notifications.cancelAllScheduledNotificationsAsync()
+            Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `Reminder for Event ${name} on ${d}`,
+                    body: 'This is your scheduled reminder',
+                },
+                trigger: {
+                    type: 'date',
+                    date: oneDayBefore,
+                }
+            });
+            
+                        
+        }
+        else if(reminder == '3 days before') {
+            const threeDaysBefore = new Date(date.getTime())
+            threeDaysBefore.setDate(date.getDate() - 3)
+            threeDaysBefore.setTime(startD.getTime())
+
+            Notifications.cancelAllScheduledNotificationsAsync()
+            Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `Reminder for Event ${name} on ${d}`,
+                    body: 'This is your scheduled reminder',
+                },
+                trigger: {
+                    type: 'date',
+                    date: threeDaysBefore,
+                }
+            });
+        }
+        else if(reminder == '1 week before') {
+            const oneWeekBefore = new Date(date.getTime())
+            oneWeekBefore.setDate(date.getDate() - 7)
+            console.log(oneWeekBefore.toLocaleDateString([]).split(', ')[0]);
+            oneWeekBefore.setTime(startD.getTime())
+
+            Notifications.cancelAllScheduledNotificationsAsync()
+            Notifications.scheduleNotificationAsync({
+                content: {
+                    title: `Reminder for Event ${name} on ${d}`,
+                    body: 'This is your scheduled reminder',
+                },
+                trigger: {
+                    type: 'date',
+                    date: oneWeekBefore,
+                }
+            });
+        }
+    }
+
+    //  to check that all the notifications are scheduled correctly
+    const checkNotifications = async() => {
+        const allNotifications = await Notifications.getAllScheduledNotificationsAsync()
+        console.log(allNotifications);
+    }
+
+    // asking user permissions to use their local calendar
+    useEffect(() => {
+        (async () => {
+            const { status } = await Calendar.requestCalendarPermissionsAsync();
+            if (status === 'granted') {
+                const calendars = await Calendar.getCalendarsAsync();
+                
+                console.log('Here are all your calendars:');
+                console.log({ calendars });
+
+            }
+        })();
+    }, []);
+    
+    const formattedDate = () => {
+        const d = date.toLocaleDateString()
+        const day = d.slice(0, 2)
+        const month = d.slice(3, 5)
+        const year = d.slice(6, 10)        
+        return year + '-' + month + '-' + day
+        
+    }
     const event_details = {
         id: id,
-        date: date.toISOString().split('T')[0],
+        date: formattedDate(),
         title: title,
         description: desc,
-        startDate: new Date(),
-        endDate: new Date()
-    }
+        startDate: startD.toTimeString(),
+        endDate: endD.toTimeString()
+    }    
     const changeDate = (event, date) => {
         const {
             set,
@@ -56,27 +162,17 @@ export default function Cal() {
         
     }
 
-    // asking user permissions to use their local calendar
-    useEffect(() => {
-        (async () => {
-          const { status } = await Calendar.requestCalendarPermissionsAsync();
-          if (status === 'granted') {
-            const calendars = await Calendar.getCalendarsAsync();
-            console.log('Here are all your calendars:');
-            // console.log({ calendars });
-          }
-        })();
-    }, []);
-
     // creating events to the local calendar
     const createEvent = async(eventDetails) => {
+        // combining the date and start and end times to make it easy for users to save the event and sync it with Agenda date
+        const combinedStartDate = date.toDateString() + ' ' + startD.toTimeString()
+        const combinedEndDate = date.toDateString() + ' ' + endD.toTimeString()
         try {
-            const defaultCalendar = await Calendar.getDefaultCalendarAsync()
-    
+            const defaultCalendar = await Calendar.getDefaultCalendarAsync()        
             const eventID = await Calendar.createEventAsync(defaultCalendar.id, {
                 title: eventDetails.title,
-                startDate: eventDetails.startDate,
-                endDate: eventDetails.endDate
+                startDate: new Date(combinedStartDate),
+                endDate: new Date(combinedEndDate),
             })
 
             console.log('EVENT CREATED');
@@ -98,7 +194,7 @@ export default function Cal() {
         }
     }
 
-    // ========
+    // storing events and marks to AsyncStorage
     const storeEvents = async(val) => {
         try {
             const jsonValue = JSON.stringify(val)
@@ -149,9 +245,11 @@ export default function Cal() {
 
         setTitle("")
         setDesc("")
-
+        handleReminders(event_details.title, event_details.date)
+        checkNotifications()
     }
 
+    // getting events and marks from asyncstorage
     const getEvents = async() => {
         try {
             const jsonValue = await AsyncStorage.getItem(`${email}_events_key`)
@@ -171,8 +269,8 @@ export default function Cal() {
     }
     
     useEffect(() => {
-        getEvents()
         getMarks()
+        getEvents()
     }, [])
 
     const removeEvent = async() => {
@@ -201,7 +299,7 @@ export default function Cal() {
         // Issues with rendering of items with Agenda component: https://github.com/wix/react-native-calendars/issues/1589#issuecomment-995414073 
         const eventsDel = {...events}
         const marksDel = {...marksDate}
-        emDate = date.toISOString().split('T')[0]
+        emDate = formattedDate()
 
         console.log('before filter----', eventsDel);
         eventsDel[emDate] = eventsDel[emDate].filter(e => e.id !== index)
@@ -223,10 +321,10 @@ export default function Cal() {
     return (
         <View style={styles.container}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginBottom: 20}}>
-                <Text style={{fontSize: 30, marginTop: 35, fontWeight: 'bold'}}>Calendar</Text>
-                <Text style={{fontSize: 23, marginTop: 35, alignSelf:'center', fontStyle: 'italic'}}>{dayNames[d.getDay()]}</Text>
+                <Text style={{fontSize: 28, marginTop: 35, fontWeight: 'bold', fontFamily: 'Tomorrow', color: 'midnightblue'}}>CALENDAR</Text>
+                <Text style={{fontSize: 25, marginTop: 35, fontFamily: 'Sriracha', color: 'orange'}}>{dayNames[d.getDay()]}</Text>
             </View>
-            
+            {/* MAIN CALENDAR AGENDA */}
             <Agenda 
                 items={events}
                 style={{
@@ -234,15 +332,13 @@ export default function Cal() {
                 }}
                 renderItem={(item)=> {
                     return (
-                        <View style={{backgroundColor: 'white', marginTop: 15, marginRight: 10, padding: 10, borderRadius: 10, flexDirection: 'row', justifyContent: 'space-between'}}>
+                        <View style={{backgroundColor: 'white', marginTop: 15, marginRight: 10, padding: 15, borderRadius: 15, flexDirection: 'row', justifyContent: 'space-between'}}>
                             <View>
-                                <Text>{item.title}</Text>
+                                <Text style={{fontSize: 18, color: 'midnightblue', fontWeight: '600'}}>{item.title}</Text>
                                 <Text>{item.description}</Text>
-                                <Text>Start: {startD.toLocaleDateString([], {hour12: true, hour: '2-digit', minute: '2-digit'})}</Text>
-                                <Text>End: {endD.toLocaleDateString([], {hour12: true, hour: '2-digit', minute: '2-digit'})}</Text>
                             </View>
                             <MaterialCommunityIcons name='delete-circle-outline' size={35} color={'red'} 
-                            style={{marginLeft: 20, marginRight: 5}} 
+                            style={{marginLeft: 20, alignSelf: 'center'}} 
                             onPress={() => {
                                     onEventsDelete(item.id, date)
                                 }}/>
@@ -251,8 +347,8 @@ export default function Cal() {
                 }}
                 renderEmptyData={() => {
                     return (
-                        <View style={{}}>
-                            <Text style={{textAlign:'center', marginTop: 50, fontSize: 17}}> No events added for this day</Text>
+                        <View>
+                            <Text style={{textAlign:'center', marginTop: 50, fontSize: 23, fontFamily: 'Sriracha', color: 'lightsalmon'}}> No events added for this day.</Text>
                         </View>
                     );
                 }}
@@ -264,7 +360,7 @@ export default function Cal() {
                     agendaKnobColor: 'orange',
                     textDayFontSize: 19,
                     textDayHeaderFontWeight: 'bold',
-                    textDayHeaderFontSize: 14, // sun,mon,tues ...
+                    textDayHeaderFontSize: 14, 
                     textSectionTitleColor: 'orange',
                     textMonthFontSize: 20,
                     todayBackgroundColor: 'aliceblue',
@@ -278,12 +374,12 @@ export default function Cal() {
             
             {/* Add new event */}
             <TouchableOpacity style={styles.add_event} onPress={toggleModal}>
-                <Text style={styles.add_event_text}>Add New Event</Text>
+                <Text style={styles.add_event_text}>ADD NEW EVENT</Text>
                 <Modal isVisible={isModalVisible}
                     onSwipeComplete={()=>setModalVisible(false)} 
                     backdropOpacity={0.4}>
                     <View style={styles.new_event_modal}>
-                        <Text style={styles.modal_title}>Add new event to the Calendar</Text>
+                        <Text style={styles.modal_title}>ADD NEW EVENT</Text>
                         {/* Text Inputs for name and description */}
                         <TextInput 
                             value={title}
@@ -291,20 +387,21 @@ export default function Cal() {
                             placeholder="Event Name"
                             placeholderTextColor={'grey'}
                             style={styles.event_name}
+                            
                         />
                         <TextInput 
                             multiline
                             maxLength={200}
                             value={desc}
                             onChangeText={setDesc}
-                            placeholder="Event description"
+                            placeholder="Event description (optional)"
                             placeholderTextColor={'grey'}
                             style={styles.event_desc}
                         />
 
                         {/* date picker */}
                         <View style={styles.event_date}>
-                            <Text style={{fontSize: 17, fontWeight: '500'}}>Select Date:</Text>
+                            <Text style={{fontSize: 18, color: 'goldenrod', fontFamily: 'Tomorrow'}}>Select Date:</Text>
                             <DateTimePicker 
                                 mode="date"
                                 value={date}
@@ -314,8 +411,8 @@ export default function Cal() {
                         
                         {/* View containing time pickers for start time and end time */}
                         <View style={styles.times}>
-                            <View style={{alignItems: 'center'}}>
-                                <Text style={{fontSize: 17, marginBottom: 7}}>Start Time</Text>
+                            <View style={{backgroundColor: 'lightyellow', padding: 13, borderRadius: 20}}>
+                                <Text style={{fontSize: 18, color: 'goldenrod', fontFamily: 'Tomorrow', alignSelf: 'center', marginBottom: 7}}>Start Time:</Text>
                                 <DateTimePicker 
                                     value={startD}
                                     mode="time"
@@ -323,26 +420,72 @@ export default function Cal() {
                                 />
                             </View>
 
-                            <View style={{alignItems: 'center'}}>
-                                <Text style={{fontSize: 17, marginBottom: 7}}>End Time</Text>
+                            <View style={{backgroundColor: 'lightyellow', padding: 13, borderRadius: 20,}}>
+                                <Text style={{fontSize: 18, color: 'goldenrod', fontFamily: 'Tomorrow', alignSelf: 'center', marginBottom: 7}}>End Time:</Text>
                                 <DateTimePicker 
                                     value={endD}
                                     mode="time"
-                                    onChange={changeEndTime}
+                                    onChange={changeEndTime} 
                                 />
                             </View>
                         </View>
 
+                        {/* Setting reminders [a day before, 3 days before and a week before the scheduled event] */}
+                        <View style={{backgroundColor: 'lightyellow', padding: 13, borderRadius: 20, marginLeft: 20, marginRight: 20, marginTop: 10}}>
+                            <Text style={{fontSize: 18, color: 'goldenrod', fontFamily: 'Tomorrow', alignSelf: 'center', marginBottom: 7}} >Set Reminder</Text>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 5}}>
+                                <TouchableOpacity style={ select1 ? styles.onSelection : styles.noSelection} 
+                                onPress={()=> {
+                                    toggleSelect1()
+                                    setSelect2(false)
+                                    setSelect3(false)
+                                    setReminder('1 day before')
+                                }}>
+                                    <Text style={{alignSelf: 'center'}}>1 day before</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={select2 ? styles.onSelection : styles.noSelection}
+                                    onPress={() => {
+                                    toggleSelect2()
+                                    setSelect1(false)
+                                    setSelect3(false)
+                                    setReminder('3 days before')
+                                    }}>
+                                    <Text>3 days before</Text>
+                                </TouchableOpacity>
+                                
+                                <TouchableOpacity style={select3 ? styles.onSelection : styles.noSelection} 
+                                onPress={() => {
+                                    toggleSelect3()
+                                    setSelect1(false)
+                                    setSelect2(false)
+                                    setReminder('1 week before')
+                                }}>
+                                    <Text>1 week before</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
                         <View style={{flexDirection: 'row', justifyContent: 'space-around', margin: 10}}>
-                            <Button title="discard" onPress={toggleModal} />
-                            <Button title="save" onPress={()=>{
-                                if(title == "" && desc == "" ) toggleModal()
-                                else {
-                                    onItemSubmit()
-                                    createEvent(event_details)
-                                    toggleModal()
-                                }
-                            }} />
+                            <TouchableOpacity
+                                onPress={toggleModal}>
+                                <Text style={{fontSize: 18, fontFamily: 'Tomorrow', color: 'grey', marginTop: 10, marginRight: 10}}>DISCARD</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity 
+                                onPress={()=> {
+                                    if(title == "") {
+                                        alert('Name input is empty')
+                                        toggleModal()
+                                    }
+                                    else {
+                                        onItemSubmit()
+                                        createEvent(event_details)
+                                        toggleModal()
+                                    }
+                                }}>
+                                <Text style={{fontSize: 18, fontFamily: 'Tomorrow', color: 'navy', marginTop: 10, marginRight: 10}}>SAVE</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </Modal>
@@ -358,65 +501,86 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     add_event: {
-        borderWidth: 1,
-        borderRadius: 20,
-        borderColor: 'white',
         marginTop: 10,
-        height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 10,
+        borderWidth: 2,
+        borderRadius: 20,
         backgroundColor: 'lemonchiffon',
-        shadowColor: 'white',
+        borderColor: 'gold',
+        borderBottomWidth: 5,
+        borderLeftWidth: 5
     },
     add_event_text: {
-        fontSize: 20,
-        fontWeight: 'bold'
+        margin: 10, 
+        fontSize: 20, 
+        fontFamily: 'Tomorrow', 
+        color: 'goldenrod'
     },
     new_event_modal: {
-        width: 350, 
-		height: 450, 
-		backgroundColor: 'white', 
+        width: 370, 
+		height: 550, 
+		backgroundColor: 'aliceblue', 
 		borderRadius: 25,
         alignSelf: 'center'
     },
     modal_title: {
-        alignSelf: 'center',
-        marginTop: 20,
-        fontSize: 20,
-        fontWeight: '500'
+        fontSize: 25,
+        marginTop: 25,
+        fontFamily: 'Tomorrow',
+        color: 'navy',
+        alignSelf: 'center'
     },
     event_date: {
         flexDirection: 'row', 
         alignItems: 'center', 
         justifyContent: 'space-between', 
-        marginTop: 20, 
+        marginTop: 10, 
         marginRight: 25, 
-        marginLeft: 25
+        marginLeft: 25,
+        backgroundColor: 'lightyellow',
+        padding: 13,
+        borderRadius: 20
     },
     event_name: {
         marginLeft: 25,
         marginTop: 20,
         marginRight: 25,
-        backgroundColor: 'rgb(227, 227, 227)',
+        backgroundColor: 'lightyellow',
         padding: 15,
         fontSize: 16,
         borderRadius: 20,
     },
     event_desc: {
         marginLeft: 25,
-        marginTop: 20,
+        marginTop: 10,
         marginRight: 25,
-        backgroundColor: 'rgb(227, 227, 227)',
+        backgroundColor: 'lightyellow',
         padding: 15,
         fontSize: 16,
         borderRadius: 20,
-        height: 100
+        height: 70
     },
     times: {
-        marginTop: 20,
+        marginTop: 10,
+        marginRight: 25, 
+        marginLeft: 25,
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between'
+    },
+    onSelection: {
+        borderWidth: 1, 
+        padding: 7, 
+        borderRadius: 15, 
+        borderColor: 'sandybrown',
+        borderLeftWidth: 3,
+        borderBottomWidth: 3,
+    },
+    noSelection: {
+        borderWidth: 1, 
+        padding: 7, 
+        borderRadius: 15,
+        borderColor: 'gold'
     },
 
 });

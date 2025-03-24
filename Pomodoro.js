@@ -8,7 +8,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
 import Modal from "react-native-modal";
 
-
 export default function Pomodoro({navigation}) {
     const {name} = useContext(TasksContext)
     const [pomodoroDisplay, setPomodoroDisplay] = useState(false)
@@ -117,17 +116,48 @@ export default function Pomodoro({navigation}) {
     
         return (
             <View>
+                <TouchableOpacity style={[styles.timer_controls, {alignItems: 'center', margin: 10}]}
+                    onPress={() => {
+                        const time = new Date()
+                        time.setMinutes(time.getMinutes() + 25)
+                        restart(time)
+                    }}>
+                        <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>START 25 MINS</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
-
+                    
                     <View style={{flexDirection: 'row', alignSelf:'center'}}>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{hours < 10 ? '0' : ''}{hours}:</Text>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{minutes < 10 ? '0' : ''}{minutes}:</Text>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{seconds < 10 ? '0' : ''}{seconds}</Text>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'navy'}}>{hours < 10 ? '0' : ''}{hours}:</Text>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'goldenrod'}}>{minutes < 10 ? '0' : ''}{minutes}:</Text>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow'}}>{seconds < 10 ? '0' : ''}{seconds}</Text>
                     </View>
+                </TouchableOpacity>
 
-                    <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
-                        <Text style={[styles.set_timer_button, {alignSelf: 'center'}]}> Set Pomodoro </Text>
+
+                <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 20}}>
+
+                    <TouchableOpacity style={styles.timer_controls}
+                    onPress={resume}> 
+                        <Text  style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>START</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity onPress={pause} style={styles.timer_controls}>
+                        <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>PAUSE</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity style={styles.timer_controls}
+                    onPress={() => {
+                        const time = new Date()
+                        time.setMinutes(time.getMinutes() + 0)
+                        restart(time)
+                    }}>
+                        <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>RESET</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
+                    <Text style={[styles.set_timer_button, {alignSelf: 'center', marginTop: 45}]}>CUSTOM</Text>
                 </TouchableOpacity>
 
                 <TimerPickerModal 
@@ -144,23 +174,6 @@ export default function Pomodoro({navigation}) {
                     styles={{theme:'light'}}
                 />
 
-                <Text style={{alignSelf:'center'}}>{isRunning ? 'Running' : 'Not running'}</Text>
-
-                <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                    <Button title="Start" onPress={resume}/>
-                    <Button title="Pause" onPress={pause}/>
-                    <Button title="Start 25 mins" onPress={() => {
-                        const time = new Date()
-                        time.setMinutes(time.getMinutes() + 25)
-                        restart(time)
-                    }}/>
-                    <Button title="Reset" onPress={() => {
-                        const time = new Date()
-                        time.setMinutes(time.getMinutes() + 0)
-                        restart(time)
-                    }}/>
-                    
-                </View>
             </View>
         );
 
@@ -189,19 +202,49 @@ export default function Pomodoro({navigation}) {
     
         return (
             <View>
-                <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
-                    <View style={{flexDirection: 'row', alignSelf:'center'}}>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{hours < 10 ? '0' : ''}{hours}:</Text>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{minutes < 10 ? '0' : ''}{minutes}:</Text>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{seconds < 10 ? '0' : ''}{seconds}</Text>
-                    </View>
-
-                    <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
-                        <Text style={[styles.set_timer_button, {alignSelf: 'center'}]}> Set Short Break </Text>
-                    </TouchableOpacity>
+                <TouchableOpacity style={[styles.timer_controls, {alignItems: 'center', margin: 10}]}
+                    onPress={() => {
+                        const time = new Date()
+                        time.setMinutes(time.getMinutes() + 10)
+                        restart(time)
+                    }}>
+                        <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>START 10 MINS</Text>
                 </TouchableOpacity>
 
-            
+                <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
+                
+                    <View style={{flexDirection: 'row', alignSelf:'center'}}>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'navy'}}>{hours < 10 ? '0' : ''}{hours}:</Text>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'goldenrod'}}>{minutes < 10 ? '0' : ''}{minutes}:</Text>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow',}}>{seconds < 10 ? '0' : ''}{seconds}</Text>
+                    </View>
+
+                </TouchableOpacity>
+
+        
+                <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 20}}>
+                    <TouchableOpacity style={styles.timer_controls}
+                        onPress={resume}> 
+                            <Text  style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>START</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={pause} style={styles.timer_controls}>
+                            <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>PAUSE</Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity style={styles.timer_controls}
+                        onPress={() => {
+                            const time = new Date()
+                            time.setMinutes(time.getMinutes() + 0)
+                            restart(time)
+                        }}>
+                            <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>RESET</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
+                    <Text style={[styles.set_timer_button, {alignSelf: 'center', marginTop: 45}]}>CUSTOM</Text>
+                </TouchableOpacity>
                 <TimerPickerModal 
                     visible={showPicker}
                     setIsVisible={setShowPicker}
@@ -216,17 +259,6 @@ export default function Pomodoro({navigation}) {
                     styles={{theme:'light'}}
                 />
 
-                <Text style={{alignSelf:'center'}}>{isRunning ? 'Running' : 'Not running'}</Text>
-
-                <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                    <Button title="Start" onPress={resume}/>
-                    <Button title="Pause" onPress={pause}/>
-                    <Button title="Restart" onPress={() => {
-                        const time = new Date();
-                        time.setSeconds(time.getSeconds() + 0);
-                        restart(time)
-                    }}/>
-                </View>
             </View>
         );
     }
@@ -254,19 +286,49 @@ export default function Pomodoro({navigation}) {
     
         return (
             <View>
-                <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
-
-                    <View style={{flexDirection: 'row', alignSelf:'center'}}>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{hours < 10 ? '0' : ''}{hours}:</Text>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{minutes < 10 ? '0' : ''}{minutes}:</Text>
-                        <Text style={{fontSize: 25, fontWeight: '500'}}>{seconds < 10 ? '0' : ''}{seconds}</Text>
-                    </View>
-
-                    <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
-                        <Text style={[styles.set_timer_button, {alignSelf: 'center'}]}> Set Long Break </Text>
-                    </TouchableOpacity>
+                <TouchableOpacity style={[styles.timer_controls, {alignItems: 'center', margin: 10}]}
+                    onPress={() => {
+                        const time = new Date()
+                        time.setMinutes(time.getMinutes() + 20)
+                        restart(time)
+                    }}>
+                        <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>START 20 MINS</Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
+                
+                    <View style={{flexDirection: 'row', alignSelf:'center'}}>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'navy'}}>{hours < 10 ? '0' : ''}{hours}:</Text>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow', color: 'goldenrod'}}>{minutes < 10 ? '0' : ''}{minutes}:</Text>
+                        <Text style={{fontSize: 45, fontFamily: 'Tomorrow',}}>{seconds < 10 ? '0' : ''}{seconds}</Text>
+                    </View>
+
+                </TouchableOpacity>
+
+        
+                <View style={{flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 20}}>
+                    <TouchableOpacity style={styles.timer_controls}
+                        onPress={resume}> 
+                            <Text  style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>START</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={pause} style={styles.timer_controls}>
+                            <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>PAUSE</Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity style={styles.timer_controls}
+                        onPress={() => {
+                            const time = new Date()
+                            time.setMinutes(time.getMinutes() + 0)
+                            restart(time)
+                        }}>
+                            <Text style={{fontFamily: 'Tomorrow', fontSize: 19, color: 'goldenrod'}}>RESET</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity activeOpacity={0.7} onPress={()=> setShowPicker(true)}>
+                    <Text style={[styles.set_timer_button, {alignSelf: 'center', marginTop: 45}]}>CUSTOM</Text>
+                </TouchableOpacity>
                 <TimerPickerModal 
                     visible={showPicker}
                     setIsVisible={setShowPicker}
@@ -280,18 +342,6 @@ export default function Pomodoro({navigation}) {
                     LinearGradient={LinearGradient}
                     styles={{theme:'light'}}
                 />
-
-                <Text style={{alignSelf:'center'}}>{isRunning ? 'Running' : 'Not running'}</Text>
-
-                <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-                    <Button title="Start" onPress={resume}/>
-                    <Button title="Pause" onPress={pause}/>
-                    <Button title="Restart" onPress={() => {
-                        const time = new Date();
-                        time.setSeconds(time.getSeconds() + 0);
-                        restart(time)
-                    }}/>
-                </View>
             </View>
         );
     }
@@ -300,39 +350,41 @@ export default function Pomodoro({navigation}) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginLeft: 20, }} color={'orange'}/>
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+                <MaterialCommunityIcons name="arrow-left-bold-circle-outline" size={40} onPress={()=> navigation.goBack()} style={{marginLeft: 20, marginRight: 40}} color={'orange'}/>
 
-            <Text style={{fontSize: 35,  fontWeight: 'bold', alignSelf: 'center'}}>Pomodoro</Text>
+                <Text style={{fontSize: 35,  alignSelf: 'center', fontFamily: 'Tomorrow', color: 'navy'}}>POMODORO</Text>
+            </View>
             
             <View style={{flexDirection: 'row', marginTop: 20, justifyContent: 'space-evenly', margin: 5,}}>
                 {/* Pomodoro */}
-                <TouchableOpacity style={styles.buttons_psl} 
+                <TouchableOpacity style={pomodoroDisplay ? styles.onselect : styles.buttons_psl} 
                     onPress={() => {
                         setPomodoroDisplay(true)
                         setShortBreakDisplay(false)
                         setLongBreakDisplay(false)
                     }}>
-                    <Text style={{fontSize: 17}}>Pomodoro</Text>
+                    <Text style={{fontSize: 17, fontFamily: 'Tomorrow', color:'goldenrod'}}>Pomodoro</Text>
                 </TouchableOpacity>
 
                 {/* Short Break */}
-                <TouchableOpacity style={styles.buttons_psl}
+                <TouchableOpacity style={shortBreakDisplay ?  styles.onselect : styles.buttons_psl}
                     onPress={() => {
                         setShortBreakDisplay(true)
                         setPomodoroDisplay(false)
                         setLongBreakDisplay(false)
                     }}>
-                    <Text style={{fontSize: 17}}>Short Break</Text>
+                    <Text style={{fontSize: 17, fontFamily: 'Tomorrow', color:'goldenrod'}}>Short Break</Text>
                 </TouchableOpacity>
 
                 {/* Long Break */}
-                <TouchableOpacity style={styles.buttons_psl}
+                <TouchableOpacity style={longBreakDisplay ?  styles.onselect : styles.buttons_psl}
                     onPress={() => {
                         setLongBreakDisplay(true)
                         setShortBreakDisplay(false)
                         setPomodoroDisplay(false)
                     }}>
-                    <Text style={{fontSize: 17}}>Long Break</Text>
+                    <Text style={{fontSize: 17, fontFamily: 'Tomorrow', color:'goldenrod'}}>Long Break</Text>
                 </TouchableOpacity>
             </View>
 
@@ -347,45 +399,45 @@ export default function Pomodoro({navigation}) {
 
             <View style={{flexDirection:'row', justifyContent:'space-evenly'}}>
                 <TouchableOpacity onPress={toggleModal}>
-                    <Text style={styles.bs_title}>Background Sounds</Text>
+                    <Text style={styles.bs_title}>BACKGROUND SOUNDS</Text>
 
                     {/* Modal containing 5 background sounds (looped) */}
                     <Modal isVisible={isModalVisible} onSwipeComplete={()=>setModalVisible(false)}  backdropOpacity={0.4}>
                         <View style={styles.modal}> 
-                            <Text style={{fontSize: 17, flexWrap: 'wrap', alignSelf: 'center', marginTop: 15, margin: 10, textAlign: 'center'}}>Background Sounds for your focus sessions</Text>
+                            <Text style={{fontSize: 19, flexWrap: 'wrap', alignSelf: 'center', marginTop: 15, margin: 10, textAlign: 'center', fontFamily: 'Tomorrow', color: 'navy'}}>Background Sounds for your focus sessions</Text>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Ocean waves</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound1} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>OCEAN WAVES</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound1} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Brown noise</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound2} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>BROWN NOISE</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound2} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Nature Sounds</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound3} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>NATURE SOUNDS</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound3} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Fire crackling sound</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound4} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>FIRE CRACKLING SOUNDS</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound4} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
                             <View style={styles.sound}>
-                                <Text style={{alignSelf: 'center', fontSize: 17}}>Rain Sounds</Text>
-                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound5} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3}}/>
+                                <Text style={{alignSelf: 'center', fontSize: 17, fontFamily: 'Tomorrow', color: 'goldenrod'}}>RAIN SOUNDS</Text>
+                                <MaterialCommunityIcons name="volume-high" size={25} onPress={playSound5} style={{alignSelf: 'flex-end', borderWidth: 1, borderRadius: 30, padding: 3, borderColor: 'navy'}} color={'navy'}/>
                             </View>
 
-                            <View style={{flexDirection:'row', justifyContent: 'space-evenly'}}>
+                            <View style={{flexDirection:'row', justifyContent: 'space-around', marginTop:30}}>
                                 <TouchableOpacity style={styles.stop_sound} onPress={stopSound}>
-                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: 'bold'}}>Stop Sound</Text>
+                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: 'bold', fontFamily: 'Tomorrow', color: 'navy'}}>STOP SOUND</Text>
                                 </TouchableOpacity>
                                 
                                 <TouchableOpacity onPress={toggleModal} style={{alignSelf: 'center'}}> 
-                                    <Text style={{alignSelf: 'center', fontSize: 17, fontWeight: '500', color: 'blue'}}>Close</Text>
+                                    <Text style={{alignSelf: 'center', fontSize: 17, color: 'grey', fontFamily: 'Tomorrow'}}>CLOSE</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -393,7 +445,7 @@ export default function Pomodoro({navigation}) {
                     </Modal>
                 </TouchableOpacity>
 
-                <MaterialCommunityIcons name="stop-circle-outline" size={60} onPress={stopSound} style={{alignSelf: 'center'}}/>
+                <MaterialCommunityIcons name="stop-circle" size={50} onPress={stopSound} style={{alignSelf: 'center'}} color={'navy'}/>
             </View>
 
         </SafeAreaView>
@@ -403,70 +455,98 @@ export default function Pomodoro({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: 'lightyellow',
     },
     timer_view: {
         borderWidth: 1,
         borderRadius: 20,
         margin: 20,
-        height: 400,
-        paddingTop: 15
+        padding: 15,
+        borderLeftWidth: 5,
+        borderBottomWidth: 5,
+        borderColor: 'goldenrod'
     },
     set_timer_button: {
         paddingVertical: 10,
         paddingHorizontal: 18,
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 10,
-        fontSize: 16,
+        fontSize: 18,
         overflow: "hidden",
-        borderColor: "#8C8C8C",
-        color: "#8C8C8C"
+        borderColor: "goldenrod",
+        color: "navy",
+        fontFamily: 'Tomorrow',
+        marginTop: 10
     },
     task_name: {
         fontSize: 25,
         alignSelf: 'center',
         fontWeight: '500',
-        color: 'darkslateblue',
-        fontStyle: 'italic'
+        color: 'midnightblue',
+        fontFamily: 'Noto-arabic'
     },
     buttons_psl: {
-        borderWidth: 1,
+        borderWidth: 1.5,
         padding: 10,
-        borderRadius: 10
+        borderRadius: 15,
+        borderBottomWidth: 4,
+        borderRightWidth: 4,
+        borderColor: 'midnightblue' 
     },
     modal: {
         width: 350, 
 		height: 550, 
-		backgroundColor: 'white', 
+		backgroundColor: 'aliceblue', 
 		borderRadius: 20, 
         alignSelf: 'center'
     },
     bs_title: {
-        borderWidth: 1, 
+        borderWidth: 2, 
         padding: 10, 
         margin: 10, 
         borderRadius: 15, 
         alignSelf: 'center', 
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontFamily: 'Tomorrow',
+        color: 'navy',
+        borderColor: 'goldenrod'
     },
     sound: {
         borderWidth: 1,
-        margin: 10,
+        marginTop: 15,
         marginLeft: 20,
         marginRight: 20,
         padding: 10,
         borderRadius: 20,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        backgroundColor: 'white',
+        borderBottomWidth: 3,
+        borderColor: 'navy'
     },
     stop_sound: {
-        margin: 10,
         flexDirection: 'row',
         justifyContent: 'space-around',
-        borderWidth: 2,
+        borderWidth: 3,
         alignSelf: 'center',
         padding: 10,
-        borderRadius: 20
+        borderRadius: 15,
+        borderColor: 'goldenrod'
+    },
+    onselect: {
+        borderWidth: 2,
+        padding: 10,
+        borderRadius: 15,
+        borderTopWidth: 4,
+        borderLeftWidth: 4,
+        borderColor: 'navy',
+
+    },
+    timer_controls: {
+        borderWidth: 2, 
+        padding: 7, 
+        borderRadius: 10, 
+        borderColor: 'navy'
     }
 });

@@ -30,6 +30,15 @@
         "projectId": "6c4bcb45-db43-46f5-8c15-fb9dea594c26"
       }
     },
-    "owner": "mariasanage"
+    "owner": "mariasanage",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/6c4bcb45-db43-46f5-8c15-fb9dea594c26"
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

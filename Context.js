@@ -14,9 +14,10 @@ export const TasksProvider = ({ children }) => {
     const [time, setTime] = useState(new Date())
     const [taskDate, setTaskDate] = useState(new Date())
     const [upTasks, setUpTasks] = useState([])
+    const [username, setUsername] = useState('')
 
     return (
-        <TasksContext.Provider value={{ tasks, setTasks, labels, setLabels, value, setValue, labelName, setLabelName, focusTasks, setFocusTasks, name, setName, email, setEmail, pass, setPass, time, setTime, taskDate, setTaskDate , upTasks, setUpTasks}}>
+        <TasksContext.Provider value={{ tasks, setTasks, labels, setLabels, value, setValue, labelName, setLabelName, focusTasks, setFocusTasks, name, setName, email, setEmail, pass, setPass, time, setTime, taskDate, setTaskDate , upTasks, setUpTasks, username, setUsername}}>
         {children}
         </TasksContext.Provider>
     );
