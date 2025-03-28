@@ -19,7 +19,7 @@ export default function Login({navigation}) {
     const {username, setUsername} = useContext(TasksContext)
     const {email, setEmail} = useContext(TasksContext)
     const {pass, setPass} = useContext(TasksContext)
-
+    // link for user authentication code with firebase auth -> https://firebase.google.com/docs/auth/web/password-auth 
     // setting SignUp as the default display
     if(!signInMode && !signUpMode) {
         setSignUpMode(true)
@@ -203,20 +203,24 @@ const styles = StyleSheet.create({
         fontSize: 17,
     },
     buttons_siso_mode: {
-        borderWidth: 3,
+        borderWidth: 2,
         padding: 10,
         borderRadius: 10,
         paddingLeft: 30,
         paddingRight: 30,
-        borderColor: 'white'
+        borderColor: 'navy',
+        backgroundColor: 'white'
     },
     signup_signin_buttons: {
-        borderWidth: 3,
+        borderWidth: 2.5,
         padding: 10,
         borderRadius: 10,
         marginLeft: 100,
         marginRight: 100,
-        borderColor: 'lightblue'
+        borderColor: 'midnightblue',
+        backgroundColor: 'white',
+        borderBottomWidth: 5,
+        borderLeftWidth: 5
     },
     onSelectSiso: {
         borderWidth: 3,
@@ -224,7 +228,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingLeft: 30,
         paddingRight: 30,
-        borderColor: 'orange'
+        borderColor: 'sandybrown',
+        backgroundColor: 'lemonchiffon'
     }
 
 });

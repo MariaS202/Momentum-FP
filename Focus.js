@@ -167,7 +167,7 @@ export default function Focus({navigation}) {
 
             </View>
         
-            <View style={{flexDirection: 'row', alignSelf: 'center' , marginTop: 10}}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10}}>
                 {/* Pomodoro feature  */}
                 <TouchableOpacity style={styles.pom_button} 
                     onPress={()=>{
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     task_cell: {
         flexDirection: 'row', 
         justifyContent: 'space-between',
-        marginTop: 15,
+        marginTop: 20,
         padding: 10,
         borderWidth: 1,
         borderRadius: 23,

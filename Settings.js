@@ -12,11 +12,11 @@ import * as Calendar from 'expo-calendar';
 export default function Settings({navigation}) {
     const {pass, setPass} = useContext(TasksContext)
     const {email, setEmail} = useContext(TasksContext)
-    const [isNotifsEnabled, setIsNotifsEnabled] = useState(false);
+    const [isNotifsEnabled, setIsNotifsEnabled] = useState(true);
     const toggleNotifsSwitch = () => setIsNotifsEnabled(!isNotifsEnabled);
-    const [isLocEnabled, setIsLocEnabled] = useState(false)
+    const [isLocEnabled, setIsLocEnabled] = useState(true)
     const toggleLocsSwitch = () => setIsLocEnabled(!isLocEnabled)
-    const [isCalEnabled, setIsCalEnabled] = useState(false)
+    const [isCalEnabled, setIsCalEnabled] = useState(true)
     const toggleCalSwitch = ()=> setIsCalEnabled(!isCalEnabled)
 
     const userSignOut = () => {
@@ -46,15 +46,14 @@ export default function Settings({navigation}) {
 
     const locationsPermissions = async() => {
         const {status} = await Location.requestForegroundPermissionsAsync();
-            if(status !== 'granted') {
-                console.log('Locations permissions not granted');
-                setIsLocEnabled(false)
-                return
-            }
-            else {
-                setIsLocEnabled(true)
-                console.log('Locations permission enabled');
-            }
+        if(status !== 'granted') {
+            console.log('Locations permissions not granted');
+            setIsLocEnabled(false)
+        }
+        else {
+            setIsLocEnabled(true)
+            console.log('Locations permission enabled');
+        }
     }
 
     const calendarPermissions = async() => {
@@ -97,8 +96,8 @@ export default function Settings({navigation}) {
                     <Switch
                         value={isNotifsEnabled}
                         onValueChange={()=>{
-                            toggleNotifsSwitch()
                             notificationsPermission()
+                            toggleNotifsSwitch()
                         }}
                         trackColor={{false: 'whitesmoke', true: 'lightblue'}}
                         thumbColor={isNotifsEnabled ? 'gold' : '#f4f3f4'}
@@ -110,8 +109,8 @@ export default function Settings({navigation}) {
                     <Switch 
                         value={isLocEnabled}
                         onValueChange={()=>{
-                            toggleLocsSwitch()
                             locationsPermissions()
+                            toggleLocsSwitch()
                         }}
                         trackColor={{false: 'whitesmoke', true: 'lightblue'}}
                         thumbColor={isLocEnabled ? 'gold' : '#f4f3f4'}
@@ -123,8 +122,8 @@ export default function Settings({navigation}) {
                     <Switch
                         value={isCalEnabled}
                         onValueChange={()=>{
-                            toggleCalSwitch()
                             calendarPermissions()
+                            toggleCalSwitch()
                         }}
                         trackColor={{false: 'whitesmoke', true: 'lightblue'}}
                         thumbColor={isCalEnabled ? 'gold' : '#f4f3f4'}

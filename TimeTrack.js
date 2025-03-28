@@ -195,7 +195,9 @@ const styles = StyleSheet.create({
         padding: 15,
         borderLeftWidth: 5,
         borderBottomWidth: 5,
-        borderColor: 'goldenrod'
+        borderColor: 'goldenrod',
+        paddingBottom: 50,
+        marginTop: 40
     },
     modal: {
         width: 350, 

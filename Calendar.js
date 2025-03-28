@@ -324,6 +324,7 @@ export default function Cal() {
                 <Text style={{fontSize: 28, marginTop: 35, fontWeight: 'bold', fontFamily: 'Tomorrow', color: 'midnightblue'}}>CALENDAR</Text>
                 <Text style={{fontSize: 25, marginTop: 35, fontFamily: 'Sriracha', color: 'orange'}}>{dayNames[d.getDay()]}</Text>
             </View>
+            
             {/* MAIN CALENDAR AGENDA */}
             <Agenda 
                 items={events}
@@ -373,7 +374,13 @@ export default function Cal() {
             />
             
             {/* Add new event */}
-            <TouchableOpacity style={styles.add_event} onPress={toggleModal}>
+            <TouchableOpacity style={styles.add_event} 
+                onPress={()=> {
+                    toggleModal()
+                    setSelect1(false)
+                    setSelect2(false)
+                    setSelect3(false)
+                }}>
                 <Text style={styles.add_event_text}>ADD NEW EVENT</Text>
                 <Modal isVisible={isModalVisible}
                     onSwipeComplete={()=>setModalVisible(false)} 

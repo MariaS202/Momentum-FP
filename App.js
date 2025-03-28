@@ -19,7 +19,7 @@ export default function App(){
     const [fontLoaded, error] = useFonts({
         'Tomorrow': require('./assets/fonts/Tomorrow-Bold.ttf'),
         'Sriracha': require('./assets/fonts/Sriracha-Regular.ttf'),
-        'Bungee Shade': require('./assets/Bungee_Shade/BungeeShade-Regular.ttf'),
+        'Bungee Shade': require('./assets/fonts/Bungee_Shade/BungeeShade-Regular.ttf'),
         'mogra': require('./assets/fonts/Mogra-Regular.ttf'),
         'Noto-arabic' : require('./assets/fonts/NotoKufiArabic-Medium.ttf')
     })  
