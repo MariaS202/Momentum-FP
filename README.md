@@ -15,6 +15,6 @@ and then follow the instructions in the terminal.
 
 ### Using Expo Go
 - Download the Expo Go app on your device (available on both Android and Apple)
-- Clink on this link: https://expo.dev/preview/update?message=final%20update&updateRuntimeVersion=1.0.0&createdAt=2025-03-28T23%3A20%3A37.424Z&slug=exp&projectId=6c4bcb45-db43-46f5-8c15-fb9dea594c26&group=343bacd3-182b-428d-b577-7258b0d6a3d1
+- Clink on this link: https://expo.dev/preview/update?message=minor%20change&updateRuntimeVersion=1.0.0&createdAt=2025-03-31T06%3A29%3A50.627Z&slug=exp&projectId=6c4bcb45-db43-46f5-8c15-fb9dea594c26&group=7bdbbe00-a743-4165-9146-db8c5f39c93d 
   
 **Please note that the app has not been tested on Android device, it is preferable if the user tests with their iPhone device.**
