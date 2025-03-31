@@ -56,15 +56,16 @@ export default function UpcomingTasks({navigation}) {
         }
     }
 
-    const handleTasks = (index) => {
-        if(upTasks[index].date === new Date().toLocaleDateString()) {
-            console.log('dates equal');
-            const removeTask = [...upTasks]
-            removeTask.splice(index, 1)
-            setUpTasks(removeTask)
-            setTasks([...tasks, upTasks[index]])
-        }
-    }
+    // code has issues
+    // const handleTasks = (index) => {
+    //     if(upTasks[index].date === new Date().toLocaleDateString()) {
+    //         console.log('dates equal');
+    //         const removeTask = [...upTasks]
+    //         removeTask.splice(index, 1)
+    //         setUpTasks(removeTask)
+    //         setTasks([...tasks, upTasks[index]])
+    //     }
+    // }
 
     const upcomingTasks = () => {
         
@@ -82,7 +83,7 @@ export default function UpcomingTasks({navigation}) {
                             <Text style={styles.up_task_name}>{item.name}</Text>
                             <Text style={styles.up_task_date}>Task Scheduled On: {item.date}</Text>
                         </View>
-                        {handleTasks(index)}
+                        {/* {handleTasks(index)} */}
                         <MaterialCommunityIcons name="delete-circle" size={40} onPress={()=> removeUpcomingTasks(index)} style={{ alignSelf:'center'}} color={'red'}/>
                             
                     </View>
